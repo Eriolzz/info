@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ThanhAnn — profile</title>
+
+<!-- Fonts: a sturdy grotesk for display, a quiet sans for body/data -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  /* ============================= TOKENS ============================= */
+  :root{
+    --bg-1:#0a0a12;
+    --bg-2:#11101d;
+    --bg-3:#1a1530;
+    --panel:rgba(20,18,32,0.55);
+    --panel-border:rgba(255,255,255,0.08);
+    --text-hi:#f1eefc;
+    --text-mid:#b8b3cf;
+    --text-low:#736d8e;
+
+    /* accent — swappable at runtime via JS, these are defaults (violet) */
+    --accent:#9d7bff;
+    --accent-2:#5ed8c9;
+    --accent-rgb:157,123,255;
+  }
+
+  *{margin:0;padding:0;box-sizing:border-box;}
+
+  html{scroll-behavior:smooth;}
+
+  body{
+    font-family:'Inter',sans-serif;
+    color:var(--text-hi);
+    min-height:100vh;
+    overflow-x:hidden;
+    background:var(--bg-1);
+  }
+
+  h1,h2,h3,.display{
+    font-family:'Space Grotesk',sans-serif;
+  }
+
+  /* ============================= SCROLLBAR ============================= */
+  ::-webkit-scrollbar{width:10px;}
+  ::-webkit-scrollbar-track{background:var(--bg-1);}
+  ::-webkit-scrollbar-thumb{
+    background:linear-gradient(180deg,var(--accent),var(--accent-2));
+    border-radius:10px;
+    border:2px solid var(--bg-1);
+  }
+  ::-webkit-scrollbar-thumb:hover{filter:brightness(1.2);}
+
+  /* ============================= ANIMATED GRADIENT BG ============================= */
+  .bg-gradient{
+    position:fixed;
+    inset:0;
+    z-index:-3;
+    background:
+      radial-gradient(circle at 20% 20%, rgba(var(--accent-rgb),0.25), transparent 45%),
+      radial-gradient(circle at 80% 30%, rgba(94,216,201,0.18), transparent 50%),
+      radial-gradient(circle at 50% 80%, rgba(var(--accent-rgb),0.15), transparent 50%),
+      linear-gradient(135deg, var(--bg-1), var(--bg-2) 50%, var(--bg-3));
+    background-size:200% 200%, 200% 200%, 200% 200%, 400% 400%;
+    animation:gradientShift 18s ease infinite;
+  }
+  @keyframes gradientShift{
+    0%{background-position:0% 0%, 100% 0%, 50% 100%, 0% 50%;}
+    50%{background-position:100% 100%, 0% 100%, 50% 0%, 100% 50%;}
+    100%{background-position:0% 0%, 100% 0%, 50% 100%, 0% 50%;}
+  }
+
+  /* subtle film-grain noise overlay for texture */
+  .bg-noise{
+    position:fixed;inset:0;z-index:-2;pointer-events:none;opacity:.035;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4'/%3E%3C/filter%3E%3Crect width='100' height='100' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  /* ============================= PARTICLES ============================= */
+  #particles{
+    position:fixed;inset:0;z-index:-1;pointer-events:none;
+  }
+
+  /* ============================= MOUSE GLOW ============================= */
+  .mouse-glow{
+    position:fixed;
+    width:420px;height:420px;
+    border-radius:50%;
+    pointer-events:none;
+    z-index:0;
+    background:radial-gradient(circle, rgba(var(--accent-rgb),0.12), transparent 70%);
+    transform:translate(-50%,-50%);
+    transition:opacity .3s ease;
+    opacity:0;
+  }
+
+  /* ============================= LOADING SCREEN ============================= */
+  #loader{
+    position:fixed;inset:0;
+    background:var(--bg-1);
+    z-index:1000;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:22px;
+    transition:opacity .6s ease, visibility .6s ease;
+  }
+  #loader.hidden{opacity:0;visibility:hidden;}
+
+  .loader-ring{
+    width:64px;height:64px;
+    border-radius:50%;
+    border:3px solid rgba(255,255,255,0.08);
+    border-top-color:var(--accent);
+    border-right-color:var(--accent-2);
+    animation:spin 1s linear infinite;
+  }
+  @keyframes spin{to{transform:rotate(360deg);}}
+
+  .loader-text{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:14px;
+    letter-spacing:3px;
+    text-transform:uppercase;
+    color:var(--text-mid);
+  }
+  .loader-pct{
+    font-family:'Space Grotesk',sans-serif;
+    font-size:13px;
+    color:var(--accent);
+    letter-spacing:1px;
+  }
+
+  /* ============================= LAYOUT ============================= */
+  .page{
+    position:relative;
+    z-index:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding:40px 20px;
+    opacity:0;
+  }
+  .page.show{
+    animation:fadeUp .9s ease forwards;
+  }
+  @keyframes fadeUp{
+    from{opacity:0; transform:translateY(24px);}
+    to{opacity:1; transform:translateY(0);}
+  }
+  .page + .page{
+  margin-top: -20px;  /* ← KÉO 2 CARD LẠI GẦN NHAU (giá trị âm) */
+  /* hoặc margin-top: 20px; (đẩy xa nhau ra) */
+}
+  /* ============================= CARD ============================= */
+  .card{
+    width:100%;
+    max-width:320px;
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:24px;
+    backdrop-filter:blur(22px) saturate(140%);
+    -webkit-backdrop-filter:blur(22px) saturate(140%);
+    padding:36px 30px 28px;
+    box-shadow:0 20px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+    position:relative;
+    overflow:hidden;
+  }
+
+  /* faint top sheen */
+  .card::before{
+    content:'';
+    position:absolute;
+    top:0;left:0;right:0;height:1px;
+    background:linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+  }
+
+  /* top controls row */
+  .topbar{
+    position:absolute;
+    top:16px; right:16px;
+    display:flex;
+    gap:8px;
+    z-index:5;
+  }
+  .icon-btn{
+    width:34px;height:34px;
+    border-radius:10px;
+    border:1px solid var(--panel-border);
+    background:rgba(255,255,255,0.04);
+    color:var(--text-mid);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    transition:all .25s ease;
+  }
+  .icon-btn:hover{
+    background:rgba(var(--accent-rgb),0.18);
+    color:var(--accent);
+    border-color:rgba(var(--accent-rgb),0.4);
+    transform:translateY(-2px);
+  }
+  .icon-btn svg{width:16px;height:16px;}
+
+  /* ============================= AVATAR ============================= */
+  .avatar-wrap{
+    width:104px;height:104px;
+    margin:6px auto 18px;
+    position:relative;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .avatar-glow{
+    position:absolute;
+    inset:-8px;
+    border-radius:50%;
+    background:conic-gradient(from 0deg, var(--accent), var(--accent-2), var(--accent));
+    filter:blur(14px);
+    opacity:.7;
+    animation:rotateGlow 6s linear infinite;
+  }
+  @keyframes rotateGlow{to{transform:rotate(360deg);}}
+
+  .avatar{
+    width:96px;height:96px;
+    border-radius:50%;
+    position:relative;
+    z-index:2;
+    object-fit:cover;
+    border:3px solid var(--bg-1);
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:34px;
+    color:#0a0a12;
+  }
+
+  .status-dot{
+    position:absolute;
+    bottom:4px; right:4px;
+    width:18px;height:18px;
+    border-radius:50%;
+    background:#5ee87a;
+    border:3px solid var(--bg-1);
+    z-index:3;
+    box-shadow:0 0 8px #5ee87a;
+  }
+
+  /* ============================= IDENTITY ============================= */
+  .identity{
+    text-align:center;
+    margin-bottom:18px;
+  }
+  .username{
+    font-size:22px;
+    font-weight:700;
+    letter-spacing:.3px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+  }
+  .username .verified{
+    width:16px;height:16px;
+    color:var(--accent);
+  }
+
+  .typing-line{
+    margin-top:6px;
+    font-size:13.5px;
+    color:var(--accent-2);
+    min-height:18px;
+    font-family:'Space Grotesk',sans-serif;
+  }
+  .typing-line .cursor{
+    display:inline-block;
+    width:2px;
+    margin-left:2px;
+    background:var(--accent-2);
+    animation:blink 1s step-start infinite;
+  }
+  @keyframes blink{50%{opacity:0;}}
+
+  .bio{
+    margin-top:12px;
+    font-size:13.5px;
+    line-height:1.6;
+    color:var(--text-mid);
+    padding:0 6px;
+  }
+
+  .meta-row{
+    display:flex;
+    justify-content:center;
+    gap:10px;
+    margin-top:16px;
+    flex-wrap:wrap;
+  }
+  .meta-chip{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    font-size:12px;
+    color:var(--text-mid);
+    background:rgba(255,255,255,0.04);
+    border:1px solid var(--panel-border);
+    padding:6px 12px;
+    border-radius:20px;
+  }
+  .meta-chip svg{width:13px;height:13px;color:var(--accent);}
+
+  /* ============================= DIVIDER ============================= */
+  .divider{
+    height:1px;
+    background:linear-gradient(90deg, transparent, var(--panel-border), transparent);
+    margin:22px 0;
+  }
+
+  /* ============================= SOCIALS ============================= */
+  .socials{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+  }
+  .social-btn{
+    aspect-ratio:1;
+    border-radius:14px;
+    border:1px solid var(--panel-border);
+    background:rgba(255,255,255,0.03);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--text-mid);
+    cursor:pointer;
+    text-decoration:none;
+    position:relative;
+    overflow:hidden;
+    transition:transform .25s ease, color .25s ease, border-color .25s ease;
+  }
+  .social-btn svg{width:18px;height:18px; position:relative; z-index:2;}
+  .social-btn::after{
+    content:'';
+    position:absolute;inset:0;
+    background:radial-gradient(circle at 50% 120%, rgba(var(--accent-rgb),0.5), transparent 70%);
+    opacity:0;
+    transition:opacity .3s ease;
+  }
+  .social-btn:hover{
+    transform:translateY(-4px);
+    color:#fff;
+    border-color:rgba(var(--accent-rgb),0.5);
+  }
+  .social-btn:hover::after{opacity:1;}
+
+  /* brand-tinted hover per platform, subtle */
+  .social-btn[data-brand="discord"]:hover{color:#8ea1ff;}
+  .social-btn[data-brand="github"]:hover{color:#e7e7ee;}
+  .social-btn[data-brand="spotify"]:hover{color:#1db954;}
+  .social-btn[data-brand="zalo"]:hover{color:#0068ff;}
+  .social-btn[data-brand="facebook"]:hover{color:#7fa9ff;}
+
+  /* ============================= MUSIC PLAYER CARD ============================= */
+  .music-card{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--panel-border);border-radius:24px;backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);padding:22px 22px 16px;box-shadow:0 20px 60px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.06);margin-top:10px;}
+  .mc-now{display:flex;gap:14px;align-items:center;margin-bottom:16px;}
+  .mc-cover-wrap{width:62px;height:62px;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:3px;box-shadow:0 0 16px rgba(var(--accent-rgb),0.5);}
+  .mc-cover{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2px solid var(--bg-1);animation:spinCover 10s linear infinite;animation-play-state:paused;}
+  .mc-cover.spinning{animation-play-state:running;}
+  @keyframes spinCover{to{transform:rotate(360deg);}}
+  .mc-meta{flex:1;min-width:0;}
+  .mc-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mc-artist{font-size:12px;color:var(--text-mid);margin-top:2px;}
+  .mc-eq{display:flex;align-items:flex-end;gap:2px;height:18px;flex-shrink:0;}
+  .mc-eq span{width:3px;border-radius:2px;background:var(--accent);opacity:.3;animation:mcBar 1s ease-in-out infinite;animation-play-state:paused;}
+  .mc-eq.active span{opacity:1;animation-play-state:running;}
+  .mc-eq span:nth-child(1){height:30%;animation-delay:0s;}.mc-eq span:nth-child(2){height:70%;animation-delay:.1s;}.mc-eq span:nth-child(3){height:50%;animation-delay:.2s;}.mc-eq span:nth-child(4){height:90%;animation-delay:.3s;}.mc-eq span:nth-child(5){height:40%;animation-delay:.4s;}
+  @keyframes mcBar{0%,100%{transform:scaleY(0.3);}50%{transform:scaleY(1);}}
+  .mc-progress-wrap{margin-bottom:10px;}
+  .mc-progress{width:100%;height:4px;border-radius:2px;cursor:pointer;margin-bottom:6px;background:rgba(255,255,255,0.08);-webkit-appearance:none;appearance:none;accent-color:var(--accent);}
+  .mc-progress::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 6px rgba(var(--accent-rgb),0.8);transition:transform .15s ease;}
+  .mc-progress::-webkit-slider-thumb:hover{transform:scale(1.3);}
+  .mc-times{display:flex;justify-content:space-between;font-size:10.5px;color:var(--text-low);}
+  .mc-controls{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:14px;}
+  .mc-btn{width:36px;height:36px;border-radius:50%;border:1px solid var(--panel-border);background:rgba(255,255,255,0.04);color:var(--text-mid);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .2s ease;flex-shrink:0;}
+  .mc-btn svg{width:15px;height:15px;}
+  .mc-btn:hover{background:rgba(var(--accent-rgb),0.18);color:var(--accent);border-color:rgba(var(--accent-rgb),0.4);transform:scale(1.1);}
+  .mc-btn.active{color:var(--accent);border-color:rgba(var(--accent-rgb),0.4);}
+  .mc-play-btn{width:46px;height:46px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border:none;border-radius:50%;color:#0a0a12;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;box-shadow:0 4px 16px rgba(var(--accent-rgb),0.5);}
+  .mc-play-btn svg{width:18px;height:18px;}
+  .mc-play-btn:hover{transform:scale(1.08);box-shadow:0 6px 22px rgba(var(--accent-rgb),0.7);}
+  .mc-vol-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
+  .mc-vol-row svg{width:14px;height:14px;color:var(--text-low);flex-shrink:0;}
+  .mc-vol{flex:1;height:4px;border-radius:2px;cursor:pointer;background:rgba(255,255,255,0.08);-webkit-appearance:none;appearance:none;accent-color:var(--accent);}
+  .mc-vol::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:12px;height:12px;border-radius:50%;background:var(--accent);cursor:pointer;}
+  .mc-playlist-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;color:var(--text-mid);font-size:11.5px;cursor:pointer;padding:8px 0;letter-spacing:.5px;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;border-top:1px solid var(--panel-border);transition:color .2s ease;}
+  .mc-playlist-toggle:hover{color:var(--accent);}
+  .mc-playlist-toggle svg{width:13px;height:13px;transition:transform .3s ease;}
+  .mc-playlist-toggle.open svg{transform:rotate(180deg);}
+  .mc-playlist{max-height:0;overflow:hidden;transition:max-height .4s ease;}
+  .mc-playlist.open{max-height:260px;overflow-y:auto;}
+  .mc-playlist::-webkit-scrollbar{width:4px;}
+  .mc-playlist::-webkit-scrollbar-thumb{background:var(--accent);border-radius:4px;}
+  .mc-item{display:flex;align-items:center;gap:10px;padding:8px 6px;border-radius:10px;cursor:pointer;transition:background .2s ease;margin-top:4px;}
+  .mc-item:hover{background:rgba(255,255,255,0.05);}
+  .mc-item.active{background:rgba(var(--accent-rgb),0.12);}
+  .mc-item-num{width:18px;font-size:11px;color:var(--text-low);text-align:center;flex-shrink:0;font-family:'Space Grotesk',sans-serif;}
+  .mc-item.active .mc-item-num{color:var(--accent);}
+  .mc-item-cover{width:36px;height:36px;border-radius:8px;object-fit:cover;flex-shrink:0;background:linear-gradient(135deg,var(--accent),var(--accent-2));}
+  .mc-item-meta{flex:1;min-width:0;}
+  .mc-item-title{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mc-item-artist{font-size:11px;color:var(--text-mid);margin-top:1px;}
+  .mc-item-dur{font-size:11px;color:var(--text-low);flex-shrink:0;}
+
+    /* ============================= FOOTER ROW ============================= */
+  .footer-row{
+    margin-top:18px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    font-size:11.5px;
+    color:var(--text-low);
+  }
+  .visitor-count{
+    display:flex;
+    align-items:center;
+    gap:5px;
+  }
+  .visitor-count svg{width:12px;height:12px;}
+  .visitor-count b{color:var(--text-mid); font-weight:600;}
+
+  /* ============================= SETTINGS PANEL ============================= */
+  .settings-panel{
+    position:absolute;
+    top:58px; right:16px;
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:14px;
+    backdrop-filter:blur(20px);
+    padding:14px;
+    width:170px;
+    z-index:10;
+    opacity:0;
+    transform:translateY(-8px) scale(.96);
+    pointer-events:none;
+    transition:all .22s ease;
+    box-shadow:0 10px 30px rgba(0,0,0,0.4);
+  }
+  .settings-panel.open{
+    opacity:1;
+    transform:translateY(0) scale(1);
+    pointer-events:auto;
+  }
+  .settings-label{
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:1px;
+    color:var(--text-low);
+    margin-bottom:10px;
+  }
+  .swatches{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+  }
+  .swatch{
+    width:24px;height:24px;
+    border-radius:50%;
+    cursor:pointer;
+    border:2px solid transparent;
+    transition:transform .2s ease, border-color .2s ease;
+  }
+  .swatch:hover{transform:scale(1.15);}
+  .swatch.active{border-color:#fff;}
+
+  /* ============================= RESPONSIVE ============================= */
+  @media (max-width:480px){
+    .card{padding:30px 20px 22px; border-radius:20px;}
+    .socials{grid-template-columns:repeat(5,1fr); gap:8px;}
+    .username{font-size:19px;}
+  }
+/* ============================= SHOOTING STARS ============================= */
+  .shooting-stars{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;}
+  .star{position:absolute;top:-20px;left:0;width:3px;height:3px;border-radius:50%;background:#fff;opacity:0;animation:shoot linear infinite;}
+  .star::after{content:"";position:absolute;top:50%;right:3px;transform:translateY(-50%);width:130px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.5),rgba(157,123,255,0.9));border-radius:2px;}
+  @keyframes shoot{
+    0%  {opacity:0;transform:translate(0,0) rotate(215deg);}
+    5%  {opacity:1;}
+    70% {opacity:0.9;}
+    100%{opacity:0;transform:translate(700px,700px) rotate(215deg);}
+  }
+</style>
+</head>
+<body>
+<!-- ============================= BACKGROUND LAYERS ============================= -->
+<div class="bg-gradient"></div>
+<div class="bg-noise"></div>
+<canvas id="particles"></canvas>
+<div class="shooting-stars" id="shootingStars"></div>
+<div class="mouse-glow" id="mouseGlow"></div>
+
+<div id="loader">
+  <div class="loader-ring"></div>
+  <div class="loader-text">Chờ xíu ...</div>
+  <div class="loader-pct" id="loaderPct">0%</div>
+</div>
+
+<!-- ============================= MAIN PAGE ============================= -->
+<div class="page" id="page">
+  <div class="card">
+
+    <!-- top-right controls: sound + settings -->
+    <div class="topbar">
+      <button class="icon-btn" id="soundToggle" title="Toggle sound">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="soundIcon">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+      </button>
+      <button class="icon-btn" id="settingsToggle" title="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3"></circle>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 .33 1.82"></path>
+        </svg>
+      </button>
+    </div>
+
+    <!-- accent color settings panel -->
+    <div class="settings-panel" id="settingsPanel">
+      <div class="settings-label">Accent color</div>
+      <div class="swatches">
+        <div class="swatch active" style="background:#9d7bff" data-accent="157,123,255" data-accent2="#5ed8c9"></div>
+        <div class="swatch" style="background:#ff7b9d" data-accent="255,123,157" data-accent2="#ffd27b"></div>
+        <div class="swatch" style="background:#5ed8c9" data-accent="94,216,201" data-accent2="#9d7bff"></div>
+        <div class="swatch" style="background:#ffb84d" data-accent="255,184,77" data-accent2="#ff7b9d"></div>
+        <div class="swatch" style="background:#6fc3ff" data-accent="111,195,255" data-accent2="#9d7bff"></div>
+        <div class="swatch" style="background:#7bff9d" data-accent="123,255,157" data-accent2="#5ed8c9"></div>
+      </div>
+    </div>
+
+    <!-- avatar -->
+    <div class="avatar-wrap">
+      <div class="avatar-glow"></div>
+      <img src="https://files.catbox.moe/0iyd0r.jpg" class="avatar" id="avatar">
+      <div class="status-dot"></div>
+    </div>
+
+    <!-- identity -->
+    <div class="identity">
+      <div class="username">
+        ThanhAnn
+        <svg class="verified" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.39 1.94 3.06-.39 1.04 2.9 2.74 1.49-.62 3.05L22 14l-1.39 2.78.62 3.05-2.74 1.49-1.04 2.9-3.06-.39L12 26l-2.39-2.1L6.55 25.71 5.51 22.81 2.77 21.32 3.39 18.27 2 15.5l1.39-2.78-.62-3.05 2.74-1.49 1.04-2.9 3.06.39z"></path></svg>
+      </div>
+      <div class="typing-line"><span id="typingText"></span><span class="cursor" id="typingCursor">&nbsp;</span></div>
+      <p class="bio">một khứa hướng nội nhưng mà nói nhiều =)).</p>
+
+      <div class="meta-row">
+        <div class="meta-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+          <span id="statusText">online — 24/7</span>
+        </div>
+        <div class="meta-chip">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          <span>Yên Phú, Phú Thọ</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- social buttons -->
+    <div class="socials">
+      <a class="social-btn" data-brand="discord" href="https://discord.com/users/1332642938957729826" title="Discord">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.369A19.79 19.79 0 0 0 16.558 3c-.2.357-.43.84-.59 1.225a18.27 18.27 0 0 0-5.93 0A8.69 8.69 0 0 0 9.45 3 19.79 19.79 0 0 0 5.69 4.369a31.6 31.6 0 0 0-1.8 15.8 19.78 19.78 0 0 0 5.92 3.02c.46-.63.87-1.3 1.2-2.02-.64-.2-1.25-.46-1.83-.77.15-.1.3-.21.44-.32a14.02 14.02 0 0 0 12.1 0c.14.11.29.22.44.32-.58.31-1.19.57-1.83.77.33.72.74 1.39 1.2 2.02 2.41-.61 4.62-1.6 5.92-3.02.52-5.17-.88-9.66-3.74-13.66zM8.68 14.81c-1.23 0-2.25-1.12-2.25-2.5s1-2.5 2.25-2.5c1.24 0 2.28 1.12 2.25 2.5 0 1.38-1.02 2.5-2.25 2.5zm6.64 0c-1.23 0-2.25-1.12-2.25-2.5s1.02-2.5 2.25-2.5c1.24 0 2.28 1.12 2.25 2.5 0 1.38-1.01 2.5-2.25 2.5z"></path></svg>
+      </a>
+      <a class="social-btn" data-brand="github" href="https://github.com/Eriolzz" title="GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.17c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.48-1.34-5.48-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23.96-.27 1.98-.4 3-.41 1.02.01 2.04.14 3 .41 2.29-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.82 5.63-5.5 5.92.43.37.82 1.1.82 2.22v 3.29c0 .32.21.7.83.58A12 12 0 0 0 12 0z"></path></svg>
+      </a>
+      <a class="social-btn" data-brand="zalo" href="https://zalo.me/0971231041" title="Zalo">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 14H9V10h2v6zm4 0h-2v-3.5c0-.83-.67-1.5-1.5-1.5S10 11.67 10 12.5V16H8v-6h2v.93c.5-.7 1.29-1.43 2.5-1.43C14.43 9.5 15 11 15 12.5V16z"/></svg>
+      </a>
+    <a class="social-btn" data-brand="spotify" href="https://open.spotify.com/user/31zf5fxifykppyawkfksull6ynrq" title="Spotify">
+  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.65 14.4c-.2.3-.6.4-.9.2-2.4-1.47-5.43-1.8-9-.99-.34.08-.68-.13-.76-.47-.08-.34.13-.68.47-.76 3.9-.89 7.25-.51 9.94 1.13.3.18.4.58.25.89zm1.24-2.76c-.24.38-.75.5-1.13.26-2.75-1.69-6.94-2.18-10.19-1.19-.42.13-.86-.11-.99-.52-.13-.42.11-.86.52-.99 3.72-1.13 8.34-.58 11.52 1.36.39.24.51.75.27 1.08zm.11-2.87C14.85 8.88 9.61 8.7 6.37 9.67c-.5.15-1.03-.13-1.18-.63-.15-.5.13-1.03.63-1.18 3.73-1.13 9.93-.91 13.84 1.37.46.27.62.86.35 1.32-.27.46-.87.62-1.01.22z"/></svg>
+    </a>
+      <a class="social-btn" data-brand="facebook" href="https://www.facebook.com/share/1JNWxJNGPX/" title="Facebook">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.84c0-2.51 1.49-3.9 3.77-3.9 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.91h-2.34v7.03C18.34 21.21 22 17.1 22 12.06z"></path></svg>
+      </a>
+    </div>
+
+
+
+    <!-- footer: visitor counter -->
+    <div class="footer-row">
+      <div class="visitor-count">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+        <span>visit #<b id="visitorCount">0</b></span>
+      </div>
+      <span>est.VN 2026</span>
+    </div>
+
+  </div>
+</div>
+
+<!-- ============================= MUSIC PLAYER ============================= -->
+<audio id="mcAudio"></audio>
+<div class="page" id="musicPage" style="padding-top:0;min-height:unset;">
+  <div class="music-card" id="musicCard">
+    <div class="mc-now">
+      <div class="mc-cover-wrap"><img class="mc-cover" id="mcCover" src="" alt="cover"></div>
+      <div class="mc-meta">
+        <div class="mc-title" id="mcTitle">—</div>
+        <div class="mc-artist" id="mcArtist">—</div>
+      </div>
+      <div class="mc-eq" id="mcEq"><span></span><span></span><span></span><span></span><span></span></div>
+    </div>
+    <div class="mc-progress-wrap">
+      <input type="range" class="mc-progress" id="mcProgress" value="0" min="0" max="100" step="0.1">
+      <div class="mc-times"><span id="mcCurrent">0:00</span><span id="mcDuration">0:00</span></div>
+    </div>
+    <div class="mc-controls">
+      <button class="mc-btn" id="mcShuffle" title="Shuffle">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line></svg>
+      </button>
+      <button class="mc-btn" id="mcPrev" title="Previous">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+      </button>
+      <button class="mc-play-btn" id="mcPlay" title="Play/Pause">
+        <svg id="mcPlayIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+      </button>
+      <button class="mc-btn" id="mcNext" title="Next">
+        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2-8.14L11.03 12 8 14.14V9.86zM16 6h2v12h-2z"/></svg>
+      </button>
+      <button class="mc-btn" id="mcRepeat" title="Repeat">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+      </button>
+    </div>
+    <div class="mc-vol-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg>
+      <input type="range" class="mc-vol" id="mcVol" min="0" max="1" step="0.01" value="0.7">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+    </div>
+    <button class="mc-playlist-toggle" id="mcToggle">
+      <span>Playlist</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+    </button>
+    <div class="mc-playlist" id="mcPlaylist"></div>
+  </div>
+</div>
+
+<script>
+/* =========================================================================
+   PERSONAL PROFILE SITE — vanilla JS, no frameworks
+   Sections: loader, particles, mouse glow, typing fx, settings/accent,
+             social buttons, music player, sound toggle, visitor counter
+   ========================================================================= */
+
+// Global icon constants - accessible throughout script
+const ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
+const ICON_PAUSE = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
+
+/* ---------------------------- LOADING SCREEN ---------------------------- */
+(function loaderSequence(){
+  const loader = document.getElementById('loader');
+  const pctEl = document.getElementById('loaderPct');
+  const page = document.getElementById('page');
+  let pct = 0;
+
+  const interval = setInterval(() => {
+    pct += Math.max(1, (100 - pct) / 9);
+    if (pct >= 100) {
+      pct = 100;
+      clearInterval(interval);
+      pctEl.textContent = '100%';
+      setTimeout(() => {
+        loader.classList.add('hidden');
+        page.classList.add('show');
+        const mp = document.getElementById('musicPage'); if(mp) mp.classList.add('show');
+      }, 350);
+      return;
+    }
+    pctEl.textContent = Math.floor(pct) + '%';
+  }, 90);
+})();
+
+/* ---------------------------- PARTICLES (canvas) ---------------------------- */
+(function particles(){
+  const canvas = document.getElementById('particles');
+  const ctx = canvas.getContext('2d');
+  let w, h, particles = [];
+  const COUNT = window.innerWidth < 600 ? 35 : 70;
+
+  function resize(){
+    w = canvas.width = window.innerWidth;
+    h = canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  function getAccent(){
+    return getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb').trim() || '157,123,255';
+  }
+
+  function spawn(){
+    particles = [];
+    for (let i=0;i<COUNT;i++){
+      particles.push({
+        x: Math.random()*w,
+        y: Math.random()*h,
+        r: Math.random()*1.6 + 0.4,
+        vx: (Math.random()-0.5)*0.25,
+        vy: (Math.random()-0.5)*0.25,
+        a: Math.random()*0.5+0.15
+      });
+    }
+  }
+  spawn();
+
+  function tick(){
+    ctx.clearRect(0,0,w,h);
+    const accent = getAccent();
+    particles.forEach(p=>{
+      p.x += p.vx;
+      p.y += p.vy;
+      if (p.x < 0) p.x = w; if (p.x > w) p.x = 0;
+      if (p.y < 0) p.y = h; if (p.y > h) p.y = 0;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(${accent}, ${p.a})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(tick);
+  }
+  tick();
+})();
+
+/* ---------------------------- MOUSE GLOW ---------------------------- */
+(function mouseGlow(){
+  const glow = document.getElementById('mouseGlow');
+  let active = false;
+  window.addEventListener('mousemove', (e) => {
+    glow.style.left = e.clientX + 'px';
+    glow.style.top = e.clientY + 'px';
+    if (!active){ glow.style.opacity = '1'; active = true; }
+  });
+  window.addEventListener('mouseleave', () => { glow.style.opacity = '0'; active = false; });
+})();
+
+/* ---------------------------- TYPING ANIMATION ---------------------------- */
+(function typingFx(){
+  const phrases = [
+    'Bùi Thành An',
+    '15/11/2010',
+    'đây là info của tui , rất vui khi bạn ghé chơi'
+  ];
+  const target = document.getElementById('typingText');
+  let pIndex = 0, charIndex = 0, deleting = false;
+
+  function step(){
+    const current = phrases[pIndex];
+    if (!deleting){
+      charIndex++;
+      target.textContent = current.slice(0, charIndex);
+      if (charIndex === current.length){
+        deleting = true;
+        setTimeout(step, 1600);
+        return;
+      }
+    } else {
+      charIndex--;
+      target.textContent = current.slice(0, charIndex);
+      if (charIndex === 0){
+        deleting = false;
+        pIndex = (pIndex+1) % phrases.length;
+      }
+    }
+    setTimeout(step, deleting ? 35 : 55);
+  }
+  step();
+})();
+
+/* ---------------------------- SETTINGS / ACCENT COLOR ---------------------------- */
+(function settingsPanel(){
+  const toggleBtn = document.getElementById('settingsToggle');
+  const panel = document.getElementById('settingsPanel');
+  const swatches = document.querySelectorAll('.swatch');
+  const root = document.documentElement;
+
+  toggleBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    panel.classList.toggle('open');
+  });
+  document.addEventListener('click', (e) => {
+    if (!panel.contains(e.target) && e.target !== toggleBtn){
+      panel.classList.remove('open');
+    }
+  });
+
+  swatches.forEach(sw => {
+    sw.addEventListener('click', () => {
+      const accentRgb = sw.dataset.accent;
+      const accent2 = sw.dataset.accent2;
+      const [r,g,b] = accentRgb.split(',').map(Number);
+      const hex = '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+      root.style.setProperty('--accent-rgb', accentRgb);
+      root.style.setProperty('--accent', hex);
+      root.style.setProperty('--accent-2', accent2);
+      swatches.forEach(s => s.classList.remove('active'));
+      sw.classList.add('active');
+      localStorage.setItem('profile-accent', JSON.stringify({accentRgb, hex, accent2}));
+    });
+  });
+
+  const saved = localStorage.getItem('profile-accent');
+  if (saved){
+    try{
+      const { accentRgb, hex, accent2 } = JSON.parse(saved);
+      root.style.setProperty('--accent-rgb', accentRgb);
+      root.style.setProperty('--accent', hex);
+      root.style.setProperty('--accent-2', accent2);
+    }catch(err){ }
+  }
+})();
+
+/* ---------------------------- MUSIC PLAYER ---------------------------- */
+(function musicPlayer(){
+
+  /* ── PLAYLIST — chỉ cần sửa array này để thêm/đổi bài ── */
+  const playlist = [
+    {
+      title:  'Giữ Lấy Làm Gì (Lofi)',
+      artist: 'Monstar / Takayama / Hai',
+      cover:  'https://files.catbox.moe/0iyd0r.jpg',
+      audio:  'https://files.catbox.moe/j1sstr.mp3'
+    },
+    {
+      title:  'Haru Haru(Big Bang) - 2AM',
+      artist: 'cover',
+      cover:  'https://files.catbox.moe/0iyd0r.jpg',
+      audio:  'https://www.image2url.com/r2/default/audio/1782897327400-98df8c0c-f04f-443b-89bd-f9db6a9f5dff.mp3'
+    },
+    {
+      title:  'Em Gái Mưa',
+      artist: 'Cover Hương Tràm',
+      cover:  'https://files.catbox.moe/0iyd0r.jpg',
+      audio:  'https://files.catbox.moe/x9j5pe.mp3'
+    },
+    {
+      title: 'Biển - đảo và em - Mã Dã',
+      artist: 'Cover',
+      cover: 'https://files.catbox.moe/0iyd0r.jpg',
+      audio: 'https://files.catbox.moe/u044dn.mp3'
+    },
+    {
+      title:'NỬA TRÁI TIM - 半点心',
+      artist:'cover',
+      cover:'https://files.catbox.moe/0iyd0r.jpg',
+      audio:'https://files.catbox.moe/40trdb.mp3'
+    },
+    {
+      title:"",
+      artist:"",
+      cover:'',
+      audio:''
+    }
+  ];
+
+  /* ── DOM ── */
+  const audio      = document.getElementById('mcAudio');
+  const cover      = document.getElementById('mcCover');
+  const titleEl    = document.getElementById('mcTitle');
+  const artistEl   = document.getElementById('mcArtist');
+  const eq         = document.getElementById('mcEq');
+  const progress   = document.getElementById('mcProgress');
+  const curEl      = document.getElementById('mcCurrent');
+  const durEl      = document.getElementById('mcDuration');
+  const playBtn    = document.getElementById('mcPlay');
+  const playIcon   = document.getElementById('mcPlayIcon');
+  const prevBtn    = document.getElementById('mcPrev');
+  const nextBtn    = document.getElementById('mcNext');
+  const shuffleBtn = document.getElementById('mcShuffle');
+  const repeatBtn  = document.getElementById('mcRepeat');
+  const volSlider  = document.getElementById('mcVol');
+  const listWrap   = document.getElementById('mcPlaylist');
+  const toggleBtn  = document.getElementById('mcToggle');
+
+  /* ── State ── */
+  let currentIdx  = parseInt(localStorage.getItem('mc-idx') || '0');
+  let isPlaying   = false;
+  let isShuffle   = false;
+  let isRepeat    = false;
+  let isSeeking   = false;
+  let pendingPlay = false;
+  if (currentIdx >= playlist.length) currentIdx = 0;
+
+  const fmt = s => {
+    if (!s || isNaN(s)) return '0:00';
+    return Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
+  };
+
+  function setPlayingUI(on){
+    isPlaying = on;
+    playIcon.innerHTML = on
+      ? '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>'
+      : '<path d="M8 5v14l11-7z"/>';
+    cover.classList.toggle('spinning', on);
+    eq.classList.toggle('active', on);
+  }
+
+  function play(){
+    if (!audio.src || audio.src === window.location.href){ pendingPlay = true; return; }
+    audio.play()
+      .then(() => setPlayingUI(true))
+      .catch(e => { console.warn('Play blocked:', e); setPlayingUI(false); });
+  }
+  function pause(){ audio.pause(); setPlayingUI(false); }
+  function togglePlay(){ isPlaying ? pause() : play(); }
+
+  function loadSong(idx, autoPlay){
+    currentIdx = idx;
+    const song = playlist[idx];
+    localStorage.setItem('mc-idx', idx);
+
+    cover.style.opacity = '0';
+    setTimeout(() => { cover.src = song.cover || ''; cover.style.opacity = '1'; }, 250);
+    titleEl.textContent  = song.title  || '—';
+    artistEl.textContent = song.artist || '—';
+    progress.value = 0;
+    curEl.textContent = '0:00';
+    durEl.textContent = '0:00';
+    setPlayingUI(false);
+
+    if (song.audio){
+      audio.src = song.audio;
+      audio.load();
+      pendingPlay = !!autoPlay;
+    }
+
+    listWrap.querySelectorAll('.mc-item').forEach((el, i) => {
+      el.classList.toggle('active', i === idx);
+      el.querySelector('.mc-item-num').textContent = i === idx ? '♪' : (i+1);
+    });
+  }
+
+  /* ── Audio events ── */
+  audio.addEventListener('canplay', () => {
+    if (pendingPlay){ pendingPlay = false; play(); }
+  });
+  audio.addEventListener('loadedmetadata', () => {
+    durEl.textContent = fmt(audio.duration);
+    const sp = localStorage.getItem('mc-pos-' + currentIdx);
+    if (sp && parseFloat(sp) < audio.duration) audio.currentTime = parseFloat(sp);
+    const durSpan = document.getElementById('mc-dur-' + currentIdx);
+    if (durSpan) durSpan.textContent = fmt(audio.duration);
+  });
+  audio.addEventListener('timeupdate', () => {
+    if (!isSeeking && audio.duration){
+      progress.value = (audio.currentTime / audio.duration) * 100;
+      curEl.textContent = fmt(audio.currentTime);
+      if (Math.floor(audio.currentTime) % 5 === 0)
+        localStorage.setItem('mc-pos-' + currentIdx, audio.currentTime);
+    }
+  });
+  audio.addEventListener('ended', () => {
+    if (isRepeat){ audio.currentTime = 0; play(); } else nextSong();
+  });
+  audio.addEventListener('error', () => {
+    setPlayingUI(false);
+    if (playlist[currentIdx].audio) titleEl.textContent = '⚠ Lỗi tải nhạc';
+  });
+
+  function nextSong(){
+    const idx = isShuffle
+      ? Math.floor(Math.random() * playlist.length)
+      : (currentIdx + 1) % playlist.length;
+    loadSong(idx, true);
+  }
+  function prevSong(){
+    if (audio.currentTime > 3){ audio.currentTime = 0; return; }
+    loadSong((currentIdx - 1 + playlist.length) % playlist.length, true);
+  }
+
+  /* ── Seek ── */
+  progress.addEventListener('mousedown', () => isSeeking = true);
+  progress.addEventListener('touchstart', () => isSeeking = true, {passive:true});
+  progress.addEventListener('input', () => {
+    curEl.textContent = fmt((progress.value/100) * (audio.duration||0));
+  });
+  progress.addEventListener('change', () => {
+    if (audio.duration) audio.currentTime = (progress.value/100) * audio.duration;
+    isSeeking = false;
+  });
+
+  /* ── Volume ── */
+  const savedVol = parseFloat(localStorage.getItem('mc-vol') || '0.7');
+  audio.volume = savedVol; volSlider.value = savedVol;
+  volSlider.addEventListener('input', () => {
+    audio.volume = parseFloat(volSlider.value);
+    localStorage.setItem('mc-vol', volSlider.value);
+  });
+
+  /* ── Shuffle / Repeat ── */
+  shuffleBtn.addEventListener('click', () => { isShuffle=!isShuffle; shuffleBtn.classList.toggle('active',isShuffle); });
+  repeatBtn.addEventListener('click',  () => { isRepeat=!isRepeat;   repeatBtn.classList.toggle('active',isRepeat); });
+
+  /* ── Playlist toggle ── */
+  toggleBtn.addEventListener('click', () => {
+    listWrap.classList.toggle('open');
+    toggleBtn.classList.toggle('open');
+  });
+
+  /* ── Buttons ── */
+  playBtn.addEventListener('click', togglePlay);
+  prevBtn.addEventListener('click', prevSong);
+  nextBtn.addEventListener('click', nextSong);
+
+  /* ── Build list ── */
+  function buildList(){
+    listWrap.innerHTML = '';
+    playlist.forEach((song, i) => {
+      const item = document.createElement('div');
+      item.className = 'mc-item' + (i === currentIdx ? ' active' : '');
+      item.innerHTML = `
+        <span class="mc-item-num">${i===currentIdx?'♪':i+1}</span>
+        <img class="mc-item-cover" src="${song.cover}" alt="" onerror="this.style.opacity=0">
+        <div class="mc-item-meta">
+          <div class="mc-item-title">${song.title}</div>
+          <div class="mc-item-artist">${song.artist}</div>
+        </div>
+        <span class="mc-item-dur" id="mc-dur-${i}">—</span>`;
+      item.addEventListener('click', () => loadSong(i, true));
+      listWrap.appendChild(item);
+    });
+  }
+
+  /* ── Keyboard ── */
+  document.addEventListener('keydown', e => {
+    if (['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+    if (e.code==='Space')     { e.preventDefault(); togglePlay(); }
+    if (e.code==='ArrowRight') nextSong();
+    if (e.code==='ArrowLeft')  prevSong();
+  });
+
+  /* ── Sound toggle hook ── */
+  window.__setPlayerMuted = muted => { audio.muted = muted; };
+
+  /* ── First click autoplay (browser policy) ── */
+  document.addEventListener('click', function onFirst(){
+    if (!isPlaying && playlist[currentIdx].audio){ pendingPlay=true; play(); }
+    document.removeEventListener('click', onFirst);
+  }, {once:true});
+
+  /* ── Init ── */
+  buildList();
+  loadSong(currentIdx, false);
+
+})();
+
+/* ---------------------------- SOUND TOGGLE ---------------------------- */
+(function soundToggle(){
+  const btn = document.getElementById('soundToggle');
+  const icon = document.getElementById('soundIcon');
+  let muted = localStorage.getItem('profile-muted') === 'true';
+
+  function render(){
+    icon.innerHTML = muted
+      ? '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><line x1="23" y1="9" x2="17" y2="15"></line><line x1="17" y1="9" x2="23" y2="15"></line>'
+      : '<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>';
+    if (window.__setPlayerMuted) window.__setPlayerMuted(muted);
+  }
+  render();
+
+  btn.addEventListener('click', () => {
+    muted = !muted;
+    localStorage.setItem('profile-muted', muted);
+    render();
+  });
+})();
+
+/* ---------------------------- VISITOR COUNTER ---------------------------- */
+(function visitorCounter(){
+  const el = document.getElementById('visitorCount');
+  let count = parseInt(localStorage.getItem('profile-visits') || '0', 10);
+
+  if (!count){
+    count = 4280 + Math.floor(Math.random()*40);
+  }
+  count += 1;
+  localStorage.setItem('profile-visits', count);
+
+  let shown = 0;
+  const target = count;
+  const step = Math.max(1, Math.floor(target / 60));
+  const tick = setInterval(() => {
+    shown += step;
+    if (shown >= target){ shown = target; clearInterval(tick); }
+    el.textContent = shown.toLocaleString();
+  }, 16);
+})();
+
+/* ---------------------------- STATUS ROTATION ---------------------------- */
+(function statusRotate(){
+  const statuses = ['online — 24/7', ' music', 'Chill', 'Game']
+  const el = document.getElementById('statusText');
+  let i = 0;
+  setInterval(() => {
+    i = (i+1) % statuses.length;
+    el.style.opacity = 0;
+    setTimeout(() => {
+      el.textContent = statuses[i];
+      el.style.opacity = 1;
+    }, 250);
+  }, 5000);
+  el.style.transition = 'opacity .25s ease';
+})();
+/* ---------------------------- SHOOTING STARS ---------------------------- */
+(function shootingStars(){
+  const container = document.getElementById('shootingStars');
+  function spawnStar(){
+    const star = document.createElement('div');
+    star.className = 'star';
+    star.style.left = Math.random() * window.innerWidth + 'px';
+    star.style.top  = Math.random() * (window.innerHeight * 0.5) + 'px';
+    const duration = 1.5 + Math.random() * 2;
+    star.style.animationDuration = duration + 's';
+    star.style.animationDelay = (Math.random() * 5) + 's';
+    const size = 2 + Math.random() * 2;
+    star.style.width  = size + 'px';
+    star.style.height = size + 'px';
+    container.appendChild(star);
+    setTimeout(() => star.remove(), (duration + 6) * 1000);
+  }
+  for(let i=0;i<8;i++) spawnStar();
+  setInterval(spawnStar, 1200);
+})();
+</script>
+</body>
+</html>
