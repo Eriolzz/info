@@ -1358,8 +1358,8 @@
   </main>
 
   <footer class="site-footer">
-    <span>© ThanhAnn</span>
-    <span>VN.2026</span>
+    <span>©buithanhan310@gmail</span>
+    <span>vn.2010</span>
   </footer>
 
 </div>
@@ -1840,24 +1840,7 @@ renderAchieveList();
 
 /* ---------------------------- FORTUNE DRAW ---------------------------- */
 const FORTUNES = [
-  'Hôm nay là ngày tốt để bấm bừa vào mấy cái nút trên web người khác 🎲',
-  'Nếu đang lười, cứ lười thêm 5 phút nữa rồi tính tiếp 😌',
-  'Một ly trà sữa đúng lúc bằng vạn lời động viên 🧋',
-  'Wifi hôm nay sẽ mượt, đừng lo 📶',
-  'Ai đó đang nhắc tới bạn — hoặc không, nhưng cứ tin vậy cho vui 👀',
-  'Hôm nay hợp code bug ít hơn thường ngày một chút 🐛',
-  'Nhớ uống nước, dù quẻ này không liên quan gì đến bói toán cả 💧',
-  'Bấm nút này lần nữa đi, biết đâu ra quẻ hay hơn 🔁',
-  'Điều bạn đang tìm kiếm ở rất gần, chỉ là chưa cuộn tới thôi 📜',
-  'Người dưng hôm nay sẽ cười với bạn nhiều hơn bình thường 😄',
-  'Ngủ sớm nay có khi lại là quyết định đúng đắn nhất tuần 🌙',
-  'Có một ngôi sao đang chờ bạn bắt ở đâu đó trên trang này ⭐',
-  'Đổi màu theme thử xem, biết đâu đổi vận luôn 🎨',
-  'Việc hôm nay để hôm nay, việc mai để... mai tính 🙃',
-  'Bạn sắp mở khóa một điều thú vị nếu tiếp tục khám phá trang này 🔓',
-  'Không phải mọi thứ cần lý do — cứ vui là được 🎈',
-  'Một tin nhắn cũ đáng để trả lời hôm nay đấy 💬',
-  'Hôm nay hợp thử món ăn mới hơn là ăn món quen 🍜',
+  '🌸 Hôm nay sẽ có một điều nhỏ bé khiến bạn mỉm cười','🌙 Đừng vội từ bỏ, điều bạn chờ có thể chỉ còn cách một bước','✨ May mắn đang đến rất gần, hãy để ý những cơ hội nhỏ','💪 Bạn mạnh mẽ hơn những gì bản thân nghĩ','💌 Một cuộc gặp gỡ bất ngờ có thể thay đổi cả ngày của bạn','🌊 Có những cơn sóng chỉ đến để đưa bạn vào đúng bờ','🦋 Hãy tin trực giác của chính bản thân mình','🌤️ Nếu hôm nay không như ý, ngày mai sẽ là một câu chuyện khác','🎴 Lá thẻ này nhắc bạn rằng mọi nỗ lực đều sẽ được đền đáp','😴 Đừng thức khuya nữa, hãy ngủ sớm và bắt đầu ngày mới với ánh bình minh','🌱 Đừng sợ bắt đầu lại, lần này bạn sẽ làm tốt hơn','😊 Một nụ cười hôm nay có thể thay đổi cả ngày mai','🌸 Đừng so sánh bản thân với người khác bởi vì mỗi con người sinh ra đã là một phép màu','🚀 Hãy thử làm điều bạn đã trì hoãn bấy lâu','🫶 Đừng quên dành thời gian cho chính mình','👑 Bạn xứng đáng với những điều tốt đẹp nhất','👣 Hãy tiếp tục tiến lên dù chỉ một bước nhỏ','🕊️ Đôi khi chậm lại cũng là một cách để tiến xa hơn','🌈 Một điều kỳ diệu đang chờ phía trước','🍀 May mắn luôn đứng về phía người không bỏ cuộc','🌌 Ánh sáng luôn xuất hiện sau màn đêm','💎 Mọi nỗ lực đều có ý nghĩa',
 ];
 
 function todayKey(){
@@ -1996,7 +1979,7 @@ loadSnakeLeaderboard();
   const CELL = canvas.width / GRID;
 
   let snake, dir, nextDir, food, score, loopId, state; // state: 'idle' | 'playing' | 'over'
-  const SPEED_START = 160;
+  const SPEED_START = 150;
 
   function styleColor(varName){
     return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
@@ -2055,11 +2038,16 @@ loadSnakeLeaderboard();
     dir = nextDir;
     const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
 
-    // va chạm tường hoặc thân
-    if (head.x < 0 || head.x >= GRID || head.y < 0 || head.y >= GRID ||
-        snake.some(s => s.x === head.x && s.y === head.y)){
-      gameOver();
-      return;
+// xuyên tường
+if (head.x < 0) head.x = GRID - 1;
+if (head.x >= GRID) head.x = 0;
+if (head.y < 0) head.y = GRID - 1;
+if (head.y >= GRID) head.y = 0;
+
+// chỉ kiểm tra đâm vào thân
+if (snake.some(s => s.x === head.x && s.y === head.y)){
+  gameOver();
+  return;
     }
 
     snake.unshift(head);
@@ -2077,7 +2065,7 @@ loadSnakeLeaderboard();
   }
 
   function speedFor(score){
-    return Math.max(70, SPEED_START - score * 6);
+    return SPEED_START;
   }
 
   function runLoop(){
