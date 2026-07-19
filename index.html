@@ -8,14 +8,14 @@
 <!-- Favicon & mobile browser theme color -->
 <link rel="icon" type="image/jpeg" href="https://files.catbox.moe/0iyd0r.jpg">
 <link rel="apple-touch-icon" href="https://files.catbox.moe/0iyd0r.jpg">
-<meta name="theme-color" content="#0a0a12">
+<meta name="theme-color" content="#0b0d12">
 
 <!-- Open Graph (Discord / Facebook / Zalo link preview) -->
 <meta property="og:type" content="profile">
 <meta property="og:title" content="ThanhAnn — profile">
 <meta property="og:description" content="một khứa hướng nội nhưng mà nói nhiều =)).">
 <meta property="og:image" content="https://files.catbox.moe/5p5ol0.jpg">
-<meta property="theme-color" content="#9d7bff">
+<meta property="theme-color" content="#6366f1">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary">
@@ -23,10 +23,10 @@
 <meta name="twitter:description" content="một khứa hướng nội nhưng mà nói nhiều =)).">
 <meta name="twitter:image" content="https://files.catbox.moe/5p5ol0.jpg">
 
-<!-- Fonts: a sturdy grotesk for display, a quiet sans for body/data -->
+<!-- Fonts: a single confident modern grotesk, used with weight/tracking for hierarchy -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <!-- Firebase (leaderboard đồng bộ) -->
 <script type="module">
@@ -54,24 +54,39 @@
 <style>
   /* ============================= TOKENS ============================= */
   :root{
-    --bg-1:#0a0a12;
-    --bg-2:#11101d;
-    --bg-3:#1a1530;
-    --panel:rgba(20,18,32,0.55);
-    --panel-border:rgba(255,255,255,0.08);
-    --text-hi:#f1eefc;
-    --text-mid:#b8b3cf;
-    --text-low:#736d8e;
+    --bg-1:#0b0d12;
+    --bg-2:#12141c;
+    --bg-3:#171a24;
+    --panel:rgba(19,21,29,0.92);
+    --panel-border:rgba(255,255,255,0.09);
+    --text-hi:#f2f3f6;
+    --text-mid:#98a0b0;
+    --text-low:#5b6270;
 
-    /* accent — swappable at runtime via JS, these are defaults (violet) */
-    --accent:#9d7bff;
-    --accent-2:#5ed8c9;
-    --accent-rgb:157,123,255;
+    /* accent — swappable at runtime via JS, these are defaults (indigo) */
+    --accent:#6366f1;
+    --accent-2:#818cf8;
+    --accent-rgb:99,102,241;
   }
 
   *{margin:0;padding:0;box-sizing:border-box;}
 
   html{scroll-behavior:smooth;}
+
+  :focus-visible{
+    outline:2px solid rgba(var(--accent-rgb),.7);
+    outline-offset:2px;
+    border-radius:4px;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *, *::before, *::after{
+      animation-duration:0.001ms !important;
+      animation-iteration-count:1 !important;
+      transition-duration:0.001ms !important;
+      scroll-behavior:auto !important;
+    }
+  }
 
   body{
     font-family:'Inter',sans-serif;
@@ -82,7 +97,8 @@
   }
 
   h1,h2,h3,.display{
-    font-family:'Space Grotesk',sans-serif;
+    font-family:'Inter',sans-serif;
+    letter-spacing:-.02em;
   }
 
   /* ============================= SCROLLBAR ============================= */
@@ -95,23 +111,32 @@
   }
   ::-webkit-scrollbar-thumb:hover{filter:brightness(1.2);}
 
-  /* ============================= ANIMATED GRADIENT BG ============================= */
+  /* ============================= BACKGROUND ============================= */
   .bg-gradient{
     position:fixed;
     inset:0;
-    z-index:-3;
-    background:
-      radial-gradient(circle at 20% 20%, rgba(var(--accent-rgb),0.25), transparent 45%),
-      radial-gradient(circle at 80% 30%, rgba(94,216,201,0.18), transparent 50%),
-      radial-gradient(circle at 50% 80%, rgba(var(--accent-rgb),0.15), transparent 50%),
-      linear-gradient(135deg, var(--bg-1), var(--bg-2) 50%, var(--bg-3));
-    background-size:200% 200%, 200% 200%, 200% 200%, 400% 400%;
-    animation:gradientShift 18s ease infinite;
+    z-index:-4;
+    background:var(--bg-1);
   }
-  @keyframes gradientShift{
-    0%{background-position:0% 0%, 100% 0%, 50% 100%, 0% 50%;}
-    50%{background-position:100% 100%, 0% 100%, 50% 0%, 100% 50%;}
-    100%{background-position:0% 0%, 100% 0%, 50% 100%, 0% 50%;}
+  .bg-spotlight{
+    position:fixed;
+    inset:0;
+    z-index:-3;
+    pointer-events:none;
+    background:radial-gradient(ellipse 700px 480px at 50% -8%, rgba(var(--accent-rgb),0.16), transparent 65%);
+  }
+  .bg-grid{
+    position:fixed;
+    inset:0;
+    z-index:-3;
+    pointer-events:none;
+    opacity:.5;
+    background-image:
+      linear-gradient(rgba(255,255,255,0.05) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
+    background-size:34px 34px;
+    -webkit-mask-image:radial-gradient(ellipse 65% 55% at 50% 28%, black 30%, transparent 85%);
+    mask-image:radial-gradient(ellipse 65% 55% at 50% 28%, black 30%, transparent 85%);
   }
 
   /* subtle film-grain noise overlay for texture */
@@ -163,14 +188,14 @@
   @keyframes spin{to{transform:rotate(360deg);}}
 
   .loader-text{
-    font-family:'Space Grotesk',sans-serif;
+    font-family:'Inter',sans-serif;
     font-size:14px;
     letter-spacing:3px;
     text-transform:uppercase;
     color:var(--text-mid);
   }
   .loader-pct{
-    font-family:'Space Grotesk',sans-serif;
+    font-family:'Inter',sans-serif;
     font-size:13px;
     color:var(--accent);
     letter-spacing:1px;
@@ -180,10 +205,9 @@
   .page{
     position:relative;
     z-index:1;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    padding:20px 20px 0;
+    max-width:720px;
+    margin:0 auto;
+    padding:0 20px 70px;
     opacity:0;
   }
   .page.show{
@@ -193,44 +217,212 @@
     from{opacity:0; transform:translateY(24px);}
     to{opacity:1; transform:translateY(0);}
   }
-  .page + .page{
-  margin-top: -40px;  /* ← KÉO 2 CARD LẠI GẦN NHAU (giá trị âm) */
-  /* hoặc margin-top: 20px; (đẩy xa nhau ra) */
-}
-  /* ============================= CARD ============================= */
-  .card{
-    width:100%;
-    max-width:320px;
+
+  /* ---- sticky top nav ---- */
+  .site-nav{
+    position:sticky; top:0; z-index:50;
+    background:rgba(11,13,18,.78);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
+    border-bottom:1px solid var(--panel-border);
+  }
+  .nav-inner{
+    max-width:720px; margin:0 auto;
+    display:flex; align-items:center; gap:16px;
+    padding:13px 20px;
+  }
+  .nav-brand{
+    font-weight:800; font-size:14.5px; letter-spacing:-.02em;
+    color:var(--text-hi); text-decoration:none; flex-shrink:0;
+  }
+  .nav-links{
+    display:flex; gap:18px;
+    overflow-x:auto; flex:1;
+    scrollbar-width:none;
+  }
+  .nav-links::-webkit-scrollbar{ display:none; }
+  .nav-links a{
+    white-space:nowrap;
+    font-size:12.5px; font-weight:500;
+    color:var(--text-mid); text-decoration:none;
+    transition:color .2s ease;
+  }
+  .nav-links a:hover{ color:var(--text-hi); }
+  .nav-utils{ display:flex; gap:6px; position:relative; flex-shrink:0; }
+
+  /* ---- section rhythm ---- */
+  .section{
+    padding:34px 0 6px;
+    border-top:1px solid var(--panel-border);
+  }
+  .hero-section{ padding-top:32px; border-top:none; text-align:left; }
+  .profile-bar{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    background:linear-gradient(135deg, rgba(var(--accent-rgb),.4), rgba(var(--accent-rgb),.08) 70%);
+    border:1px solid rgba(var(--accent-rgb),.3);
+    border-radius:999px;
+    padding:8px 22px 8px 8px;
+    margin-bottom:22px;
+  }
+  .profile-bar-text{ display:flex; flex-direction:column; gap:3px; min-width:0; }
+  .profile-status{ font-size:12.5px; color:var(--text-mid); }
+  .section-head{ margin-bottom:14px; }
+  .section-eyebrow{
+    font-size:10px; font-weight:700; text-transform:uppercase;
+    letter-spacing:2px; color:var(--accent); margin-bottom:6px;
+  }
+  .section-title{ font-size:19px; font-weight:800; letter-spacing:-.01em; color:var(--text-hi); }
+  .section-desc{ font-size:12.5px; color:var(--text-mid); margin-top:5px; max-width:480px; line-height:1.55; }
+
+  /* ---- feature grid ---- */
+  .feature-grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:8px;
+  }
+  .feature-card{
+    display:flex;
+    align-items:center;
+    gap:10px;
     background:var(--panel);
     border:1px solid var(--panel-border);
-    border-radius:24px;
-    backdrop-filter:blur(22px) saturate(140%);
-    -webkit-backdrop-filter:blur(22px) saturate(140%);
-    padding:36px 30px 28px;
-    box-shadow:0 20px 60px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06);
+    border-radius:12px;
+    padding:11px 12px;
+  }
+  .feature-card-icon{
+    width:30px;height:30px;border-radius:8px;
+    background:rgba(var(--accent-rgb),.14);
+    color:var(--accent);
+    display:flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .feature-card-icon svg{ width:14px; height:14px; }
+  .feature-card-label{ font-size:10.5px; color:var(--text-low); line-height:1.2; }
+  .feature-card-stat{ font-size:16px; font-weight:800; color:var(--text-hi); letter-spacing:-.01em; line-height:1.25; }
+
+  /* ---- snake game ---- */
+  .snake-panel{ text-align:center; }
+  .snake-hud{
+    display:flex; justify-content:center; gap:18px;
+    font-size:12.5px; color:var(--text-mid);
+    margin-bottom:12px;
+  }
+  .snake-hud b{ color:var(--text-hi); font-weight:700; }
+  .snake-board-wrap{
+    position:relative;
+    width:100%;
+    max-width:280px;
+    margin:0 auto;
+    border-radius:12px;
+    overflow:hidden;
+    border:1px solid var(--panel-border);
+    touch-action:none;
+  }
+  #snakeCanvas{ display:block; width:100%; height:auto; background:var(--bg-2); }
+  .snake-overlay{
+    position:absolute; inset:0;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    gap:12px;
+    background:rgba(11,13,18,.86);
+    backdrop-filter:blur(4px);
+    text-align:center;
+    padding:20px;
+  }
+  .snake-overlay.hidden{ display:none; }
+  .snake-overlay-text{ font-size:13px; color:var(--text-hi); font-weight:600; line-height:1.5; }
+  .snake-overlay .lb-rename-btn{ width:auto; padding:9px 22px; margin-top:0; }
+  .snake-dpad{
+    display:grid;
+    grid-template-columns:repeat(3, 46px);
+    grid-template-rows:repeat(2, 46px);
+    gap:8px;
+    justify-content:center;
+    margin:16px auto 0;
+  }
+  .snake-dbtn{
+    width:46px;height:46px;
+    border-radius:10px;
+    border:1px solid var(--panel-border);
+    background:rgba(255,255,255,0.04);
+    color:var(--text-mid);
+    display:flex;align-items:center;justify-content:center;
+    cursor:pointer;
+    transition:background .2s ease, color .2s ease, transform .1s ease;
+  }
+  .snake-dbtn svg{ width:18px;height:18px; }
+  .snake-dbtn:active{ transform:scale(.92); background:rgba(var(--accent-rgb),.2); color:var(--accent); }
+  #snakeUp{ grid-column:2; grid-row:1; }
+  #snakeLeft{ grid-column:1; grid-row:2; }
+  #snakeDown{ grid-column:2; grid-row:2; }
+  #snakeRight{ grid-column:3; grid-row:2; }
+
+  /* ---- fortune draw ---- */
+  .fortune-panel{ text-align:center; }
+  .fortune-card{
+    padding:20px 14px 22px;
+    perspective:600px;
+  }
+  .fortune-icon{ font-size:30px; margin-bottom:10px; }
+  .fortune-text{
+    font-size:13.5px; color:var(--text-hi); line-height:1.6;
+    max-width:420px; margin:0 auto;
+  }
+  .fortune-card.flip .fortune-text,
+  .fortune-card.flip .fortune-icon{
+    animation:fortuneFlip .5s ease;
+  }
+  @keyframes fortuneFlip{
+    0%{ transform:rotateX(0deg); opacity:1; }
+    45%{ transform:rotateX(90deg); opacity:.2; }
+    55%{ transform:rotateX(90deg); opacity:.2; }
+    100%{ transform:rotateX(0deg); opacity:1; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .fortune-card.flip .fortune-text, .fortune-card.flip .fortune-icon{ animation:none; }
+  }
+
+  /* ---- generic content panel (achievements / leaderboard / guestbook) ---- */
+  .section-panel{
+    background:var(--panel);
+    border:1px solid var(--panel-border);
+    border-radius:14px;
+    padding:14px;
+    margin-top:12px;
+  }
+
+  /* ---- site footer ---- */
+  .site-footer{
+    max-width:720px; margin:0 auto;
+    padding:26px 20px 40px;
+    display:flex; align-items:center; justify-content:space-between;
+    font-size:11px; letter-spacing:.6px; color:var(--text-low);
+    border-top:1px solid var(--panel-border);
+  }
+
+  @media (max-width:640px){
+    .feature-grid{ grid-template-columns:1fr 1fr; }
+  }
+  @media (max-width:480px){
+    .feature-grid{ grid-template-columns:1fr; }
+  }
+
+  /* ============================= CARD (legacy inner containers) ============================= */
+  .card{
+    width:100%;
     position:relative;
     overflow:hidden;
   }
 
-  /* faint top sheen */
-  .card::before{
-    content:'';
-    position:absolute;
-    top:0;left:0;right:0;height:1px;
-    background:linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-  }
-
   /* top controls row */
   .topbar{
-    position:absolute;
-    top:16px; right:16px;
     display:flex;
-    gap:8px;
-    z-index:5;
+    gap:6px;
   }
   .icon-btn{
     width:34px;height:34px;
-    border-radius:10px;
+    border-radius:8px;
     border:1px solid var(--panel-border);
     background:rgba(255,255,255,0.04);
     color:var(--text-mid);
@@ -248,35 +440,34 @@
 
   /* ============================= AVATAR ============================= */
   .avatar-wrap{
-    width:104px;height:104px;
-    margin:26px auto 18px;
+    width:64px;height:64px;
+    margin:0;
+    flex-shrink:0;
     position:relative;
     display:flex;align-items:center;justify-content:center;
   }
   .avatar-glow{
     position:absolute;
-    inset:-8px;
+    inset:-6px;
     border-radius:50%;
-    background:conic-gradient(from 0deg, var(--accent), var(--accent-2), var(--accent));
-    filter:blur(14px);
-    opacity:.7;
-    animation:rotateGlow 6s linear infinite;
+    background:var(--accent);
+    filter:blur(18px);
+    opacity:.35;
   }
-  @keyframes rotateGlow{to{transform:rotate(360deg);}}
 
   .avatar{
-    width:96px;height:96px;
+    width:100%;height:100%;
     border-radius:50%;
     position:relative;
     z-index:2;
     object-fit:cover;
-    border:3px solid var(--bg-1);
+    border:1px solid rgba(var(--accent-rgb),0.4);
     background:linear-gradient(135deg,var(--accent),var(--accent-2));
     display:flex;align-items:center;justify-content:center;
-    font-family:'Space Grotesk',sans-serif;
+    font-family:'Inter',sans-serif;
     font-weight:700;
-    font-size:34px;
-    color:#0a0a12;
+    font-size:24px;
+    color:#0a0908;
     cursor:pointer;
     transition:transform .15s ease;
     -webkit-touch-callout:none;
@@ -284,7 +475,7 @@
     user-select:none;
     -webkit-user-drag:none;
   }
-  .avatar:active{ transform:scale(.92); }
+  .avatar:active{ transform:scale(.96); }
 
   .confetti-piece{
     position:fixed;
@@ -296,27 +487,37 @@
 
   .status-dot{
     position:absolute;
-    bottom:4px; right:4px;
-    width:18px;height:18px;
+    bottom:2px; right:2px;
+    width:16px;height:16px;
     border-radius:50%;
-    background:#5ee87a;
-    border:3px solid var(--bg-1);
+    background:#34d399;
+    border:3px solid var(--bg-2);
     z-index:3;
-    box-shadow:0 0 8px #5ee87a;
   }
 
   /* ============================= IDENTITY ============================= */
   .identity{
-    text-align:center;
-    margin-bottom:18px;
+    text-align:left;
+    flex:1;
+    min-width:0;
+  }
+  .eyebrow{
+    font-size:10px;
+    font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:2.5px;
+    color:var(--accent);
+    opacity:.75;
+    margin-bottom:6px;
   }
   .username{
-    font-size:22px;
-    font-weight:700;
-    letter-spacing:.3px;
+    font-family:'Inter',sans-serif;
+    font-size:21px;
+    font-weight:800;
+    letter-spacing:-.02em;
     display:flex;
     align-items:center;
-    justify-content:center;
+    justify-content:flex-start;
     gap:6px;
   }
   .username .verified{
@@ -324,18 +525,53 @@
     color:var(--accent);
   }
 
-  .greeting-line{
-    display:inline-flex;
-    align-items:center;
-    gap:6px;
-    font-size:11.5px;
-    color:var(--text-mid);
-    background:rgba(255,255,255,0.04);
+  .thought-bubble{
+    position:absolute;
+    bottom:calc(100% + 12px);
+    left:0;
+    max-width:120px;
+    background:rgba(255,255,255,0.06);
+    backdrop-filter:blur(10px);
+    -webkit-backdrop-filter:blur(10px);
     border:1px solid var(--panel-border);
-    padding:5px 14px;
-    border-radius:999px;
-    margin:2px 0 14px;
-    white-space:nowrap;
+    border-radius:14px;
+    padding:6px 11px;
+    font-size:10.5px;
+    line-height:1.3;
+    color:var(--text-mid);
+    text-align:center;
+    z-index:1;
+    transform-origin:bottom left;
+    opacity:0;
+    transform:scale(0);
+    animation:bubblePop .55s cubic-bezier(.34,1.56,.64,1) 1s forwards;
+  }
+  .thought-bubble::before{
+    content:'';
+    position:absolute;
+    width:8px;height:8px;
+    left:14px; bottom:-11px;
+    background:rgba(255,255,255,0.06);
+    border:1px solid var(--panel-border);
+    border-radius:50%;
+  }
+  .thought-bubble::after{
+    content:'';
+    position:absolute;
+    width:5px;height:5px;
+    left:8px; bottom:-18px;
+    background:rgba(255,255,255,0.06);
+    border:1px solid var(--panel-border);
+    border-radius:50%;
+  }
+  @keyframes bubblePop{
+    0%{ opacity:0; transform:scale(0) translateY(6px); }
+    55%{ opacity:1; transform:scale(1.1) translateY(-3px); }
+    75%{ transform:scale(0.95) translateY(1px); }
+    100%{ opacity:1; transform:scale(1) translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .thought-bubble{ animation:none; opacity:1; transform:scale(1); }
   }
 
   /* ============================= LED NAME ============================= */
@@ -365,7 +601,7 @@
   .led-name.jump .led-letter:nth-child(8){animation-delay:.42s;}
   @keyframes ledJump{
     0%,100%{ transform:translateY(0); }
-    50%{ transform:translateY(-6px); }
+    50%{ transform:translateY(-3px); }
   }
 
   .typing-line{
@@ -373,7 +609,7 @@
     font-size:13.5px;
     color:var(--accent-2);
     min-height:18px;
-    font-family:'Space Grotesk',sans-serif;
+    font-family:'Inter',sans-serif;
   }
   .typing-line .cursor{
     display:inline-block;
@@ -388,87 +624,99 @@
     margin-top:12px;
     font-size:13.5px;
     line-height:1.6;
+    font-style:italic;
     color:var(--text-mid);
     padding:0 6px;
   }
 
   .meta-row{
     display:flex;
-    justify-content:center;
-    gap:10px;
-    margin-top:16px;
+    justify-content:flex-start;
+    gap:8px;
+    margin-top:12px;
     flex-wrap:wrap;
   }
   .meta-chip{
     display:flex;
     align-items:center;
     gap:6px;
-    font-size:12px;
+    font-size:11.5px;
     color:var(--text-mid);
-    background:rgba(255,255,255,0.04);
+    background:rgba(255,255,255,0.03);
     border:1px solid var(--panel-border);
-    padding:6px 12px;
-    border-radius:20px;
+    padding:6px 10px;
+    border-radius:7px;
   }
-  .meta-chip svg{width:13px;height:13px;color:var(--accent);}
+  .meta-chip svg{width:12px;height:12px;color:var(--text-low);}
 
   /* ============================= DIVIDER ============================= */
   .divider{
-    height:1px;
-    background:linear-gradient(90deg, transparent, var(--panel-border), transparent);
+    display:flex;
+    align-items:center;
+    gap:10px;
     margin:22px 0;
+  }
+  .divider::before,
+  .divider::after{
+    content:'';
+    flex:1;
+    height:1px;
+    background:linear-gradient(90deg, transparent, var(--panel-border));
+  }
+  .divider::after{ background:linear-gradient(90deg, var(--panel-border), transparent); }
+  .divider-mark{
+    width:5px;height:5px;
+    flex-shrink:0;
+    background:var(--accent);
+    opacity:.55;
+    transform:rotate(45deg);
   }
 
   /* ============================= SOCIALS ============================= */
   .socials{
-    display:grid;
-    grid-template-columns:repeat(5,1fr);
-    gap:10px;
+    display:flex;
+    justify-content:flex-start;
+    flex-wrap:wrap;
+    gap:9px;
   }
   .social-btn{
-    aspect-ratio:1;
-    border-radius:14px;
+    width:42px;height:42px;
+    border-radius:12px;
     border:1px solid var(--panel-border);
-    background:rgba(255,255,255,0.03);
+    background:linear-gradient(160deg, rgba(255,255,255,.05), rgba(255,255,255,.015));
     display:flex;align-items:center;justify-content:center;
     color:var(--text-mid);
     cursor:pointer;
     text-decoration:none;
     position:relative;
     overflow:hidden;
-    transition:transform .25s ease, color .25s ease, border-color .25s ease;
+    flex-shrink:0;
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.04);
+    transition:transform .3s cubic-bezier(.34,1.56,.64,1), color .25s ease, border-color .3s ease, background .3s ease, box-shadow .3s ease;
   }
-  .social-btn svg{width:18px;height:18px; position:relative; z-index:2;}
-  .social-btn::after{
-    content:'';
-    position:absolute;inset:0;
-    background:radial-gradient(circle at 50% 120%, rgba(var(--accent-rgb),0.5), transparent 70%);
-    opacity:0;
-    transition:opacity .3s ease;
-  }
+  .social-btn svg{width:17px;height:17px; position:relative; z-index:2; transition:transform .3s ease;}
   .social-btn:hover{
-    transform:translateY(-4px);
+    transform:translateY(-3px) scale(1.07);
     color:#fff;
-    border-color:rgba(var(--accent-rgb),0.5);
   }
-  .social-btn:hover::after{opacity:1;}
+  .social-btn:hover svg{ transform:scale(1.08); }
 
-  /* brand-tinted hover per platform, subtle */
-  .social-btn[data-brand="discord"]:hover{color:#8ea1ff;}
-  .social-btn[data-brand="github"]:hover{color:#e7e7ee;}
-  .social-btn[data-brand="spotify"]:hover{color:#1db954;}
-  .social-btn[data-brand="zalo"]:hover{color:#0068ff;}
-  .social-btn[data-brand="facebook"]:hover{color:#7fa9ff;}
+  /* premium per-brand fill + glow on hover */
+  .social-btn[data-brand="discord"]:hover{ background:linear-gradient(135deg,#5865f2,#7289da); border-color:#5865f2; box-shadow:0 10px 22px -8px rgba(88,101,242,.7); }
+  .social-btn[data-brand="github"]:hover{ background:linear-gradient(135deg,#3a3a3a,#131313); border-color:#4d4d4d; box-shadow:0 10px 22px -8px rgba(255,255,255,.25); }
+  .social-btn[data-brand="spotify"]:hover{ background:linear-gradient(135deg,#1ed760,#169c46); border-color:#1db954; box-shadow:0 10px 22px -8px rgba(29,185,84,.7); }
+  .social-btn[data-brand="zalo"]:hover{ background:linear-gradient(135deg,#0068ff,#4da2ff); border-color:#0068ff; box-shadow:0 10px 22px -8px rgba(0,104,255,.7); }
+  .social-btn[data-brand="facebook"]:hover{ background:linear-gradient(135deg,#1877f2,#4d9bff); border-color:#1877f2; box-shadow:0 10px 22px -8px rgba(24,119,242,.7); }
 
   /* ============================= MUSIC PLAYER CARD ============================= */
-  .music-card{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--panel-border);border-radius:24px;backdrop-filter:blur(22px) saturate(140%);-webkit-backdrop-filter:blur(22px) saturate(140%);padding:22px 22px 16px;box-shadow:0 20px 60px rgba(0,0,0,0.45),inset 0 1px 0 rgba(255,255,255,0.06);margin-top:10px;}
+  .music-card{width:100%;max-width:420px;background:var(--panel);border:1px solid var(--panel-border);border-radius:14px;padding:16px 16px 12px;box-shadow:0 16px 40px rgba(0,0,0,0.4);margin-top:10px;}
   .mc-now{display:flex;gap:14px;align-items:center;margin-bottom:16px;}
   .mc-cover-wrap{width:62px;height:62px;flex-shrink:0;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent-2));padding:3px;box-shadow:0 0 16px rgba(var(--accent-rgb),0.5);}
   .mc-cover{width:100%;height:100%;border-radius:50%;object-fit:cover;border:2px solid var(--bg-1);animation:spinCover 10s linear infinite;animation-play-state:paused;}
   .mc-cover.spinning{animation-play-state:running;}
   @keyframes spinCover{to{transform:rotate(360deg);}}
   .mc-meta{flex:1;min-width:0;}
-  .mc-title{font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mc-title{font-family:'Inter',sans-serif;font-size:14px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .mc-artist{font-size:12px;color:var(--text-mid);margin-top:2px;}
   .mc-eq{display:flex;align-items:flex-end;gap:2px;height:18px;flex-shrink:0;}
   .mc-eq span{width:3px;border-radius:2px;background:var(--accent);opacity:.3;animation:mcBar 1s ease-in-out infinite;animation-play-state:paused;}
@@ -485,14 +733,14 @@
   .mc-btn svg{width:15px;height:15px;}
   .mc-btn:hover{background:rgba(var(--accent-rgb),0.18);color:var(--accent);border-color:rgba(var(--accent-rgb),0.4);transform:scale(1.1);}
   .mc-btn.active{color:var(--accent);border-color:rgba(var(--accent-rgb),0.4);}
-  .mc-play-btn{width:46px;height:46px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border:none;border-radius:50%;color:#0a0a12;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;box-shadow:0 4px 16px rgba(var(--accent-rgb),0.5);}
+  .mc-play-btn{width:46px;height:46px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border:none;border-radius:50%;color:#0a0908;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;box-shadow:0 4px 16px rgba(var(--accent-rgb),0.5);}
   .mc-play-btn svg{width:18px;height:18px;}
   .mc-play-btn:hover{transform:scale(1.08);box-shadow:0 6px 22px rgba(var(--accent-rgb),0.7);}
   .mc-vol-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
   .mc-vol-row svg{width:14px;height:14px;color:var(--text-low);flex-shrink:0;}
   .mc-vol{flex:1;height:4px;border-radius:2px;cursor:pointer;background:rgba(255,255,255,0.08);-webkit-appearance:none;appearance:none;accent-color:var(--accent);}
   .mc-vol::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:12px;height:12px;border-radius:50%;background:var(--accent);cursor:pointer;}
-  .mc-playlist-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;color:var(--text-mid);font-size:11.5px;cursor:pointer;padding:8px 0;letter-spacing:.5px;text-transform:uppercase;font-family:'Space Grotesk',sans-serif;border-top:1px solid var(--panel-border);transition:color .2s ease;}
+  .mc-playlist-toggle{width:100%;display:flex;align-items:center;justify-content:space-between;background:none;border:none;color:var(--text-mid);font-size:11.5px;cursor:pointer;padding:8px 0;letter-spacing:.5px;text-transform:uppercase;font-family:'Inter',sans-serif;border-top:1px solid var(--panel-border);transition:color .2s ease;}
   .mc-playlist-toggle:hover{color:var(--accent);}
   .mc-playlist-toggle svg{width:13px;height:13px;transition:transform .3s ease;}
   .mc-playlist-toggle.open svg{transform:rotate(180deg);}
@@ -503,7 +751,7 @@
   .mc-item{display:flex;align-items:center;gap:10px;padding:8px 6px;border-radius:10px;cursor:pointer;transition:background .2s ease;margin-top:4px;}
   .mc-item:hover{background:rgba(255,255,255,0.05);}
   .mc-item.active{background:rgba(var(--accent-rgb),0.12);}
-  .mc-item-num{width:18px;font-size:11px;color:var(--text-low);text-align:center;flex-shrink:0;font-family:'Space Grotesk',sans-serif;}
+  .mc-item-num{width:18px;font-size:11px;color:var(--text-low);text-align:center;flex-shrink:0;font-family:'Inter',sans-serif;}
   .mc-item.active .mc-item-num{color:var(--accent);}
   .mc-item-cover{width:36px;height:36px;border-radius:8px;object-fit:cover;flex-shrink:0;background:linear-gradient(135deg,var(--accent),var(--accent-2));}
   .mc-item-meta{flex:1;min-width:0;}
@@ -517,7 +765,8 @@
     display:flex;
     align-items:center;
     justify-content:space-between;
-    font-size:11.5px;
+    font-size:11px;
+    letter-spacing:.6px;
     color:var(--text-low);
   }
   .visitor-count{
@@ -543,7 +792,7 @@
   .egg-card{
     background:linear-gradient(160deg, var(--bg-2), var(--bg-1));
     border:1px solid rgba(var(--accent-rgb),.35);
-    border-radius:20px;
+    border-radius:16px;
     padding:28px 24px;
     max-width:320px;
     text-align:center;
@@ -554,7 +803,7 @@
   .egg-overlay.open .egg-card{ transform:scale(1) translateY(0); }
   .egg-emoji{ font-size:40px; margin-bottom:10px; }
   .egg-title{
-    font-family:'Space Grotesk',sans-serif;
+    font-family:'Inter',sans-serif;
     font-weight:700; font-size:17px;
     background:linear-gradient(90deg,var(--accent),var(--accent-2));
     -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent;
@@ -563,22 +812,23 @@
   .egg-text{ font-size:13.5px; color:var(--text-mid); line-height:1.5; }
   .egg-close{
     margin-top:16px;
-    padding:8px 18px;
-    border-radius:999px;
+    padding:9px 20px;
+    border-radius:9px;
     border:1px solid rgba(var(--accent-rgb),.4);
     background:rgba(var(--accent-rgb),.12);
     color:var(--accent);
-    font-size:12.5px; font-weight:600;
+    font-size:11px; font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:1.2px;
     cursor:pointer;
   }
 
   .settings-panel{
     position:absolute;
-    top:58px; right:16px;
+    top:44px; right:0;
     background:var(--panel);
     border:1px solid var(--panel-border);
-    border-radius:14px;
-    backdrop-filter:blur(20px);
+    border-radius:12px;
     padding:14px;
     width:170px;
     z-index:10;
@@ -594,11 +844,13 @@
     pointer-events:auto;
   }
   .settings-label{
-    font-size:11px;
+    font-size:10.5px;
     text-transform:uppercase;
-    letter-spacing:1px;
+    letter-spacing:1.4px;
     color:var(--text-low);
+    padding-bottom:9px;
     margin-bottom:10px;
+    border-bottom:1px solid var(--panel-border);
   }
   .swatches{
     display:flex;
@@ -643,9 +895,8 @@
   }
   .toast{
     background:var(--panel);
-    backdrop-filter:blur(20px);
     border:1px solid rgba(var(--accent-rgb),.4);
-    border-radius:999px;
+    border-radius:10px;
     padding:10px 18px;
     font-size:12.5px;
     color:var(--text-hi);
@@ -661,8 +912,8 @@
   /* ============================= ACHIEVEMENTS ============================= */
   .footer-left{ display:flex; align-items:center; gap:12px; }
   .star-score{ cursor:default; }
-  .achieve-panel{ width:230px; }
-  .achieve-list{ display:flex; flex-direction:column; gap:10px; max-height:260px; overflow-y:auto; }
+  .achieve-list{ display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; }
+  #achieveList{ max-height:none; overflow:visible; }
   .achieve-item{
     display:flex; align-items:center; gap:10px;
     font-size:12px; color:var(--text-low);
@@ -692,10 +943,10 @@
   .lb-row.me{ color:var(--text-hi); font-weight:600; }
   .lb-rank{
     width:22px; text-align:center; flex-shrink:0;
-    font-family:'Space Grotesk',sans-serif;
+    font-family:'Inter',sans-serif;
     font-size:12px; color:var(--text-low);
   }
-  .lb-row:nth-child(1) .lb-rank{ color:#ffd24d; }
+  .lb-row:nth-child(1) .lb-rank{ color:#d4af6a; }
   .lb-row:nth-child(2) .lb-rank{ color:#c9c9d6; }
   .lb-row:nth-child(3) .lb-rank{ color:#d99a5b; }
   .lb-name{ flex:1; min-width:0; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
@@ -704,13 +955,15 @@
   .lb-rename-btn{
     width:100%;
     margin-top:12px;
-    padding:8px 0;
-    border-radius:999px;
+    padding:9px 0;
+    border-radius:9px;
     border:1px solid rgba(var(--accent-rgb),.35);
     background:rgba(var(--accent-rgb),.1);
     color:var(--accent);
-    font-size:11.5px;
+    font-size:10.5px;
     font-weight:600;
+    text-transform:uppercase;
+    letter-spacing:1.2px;
     cursor:pointer;
     transition:background .2s ease, border-color .2s ease;
   }
@@ -734,8 +987,7 @@
   .name-input:focus{ border-color:var(--accent); }
 
   /* ============================= GUESTBOOK ============================= */
-  .guestbook-panel{ width:250px; }
-  .gb-list{ max-height:200px; }
+  .gb-list{ max-height:280px; }
   .gb-item{
     display:flex; flex-direction:column; gap:2px;
     padding:8px 0;
@@ -763,11 +1015,11 @@
 
   /* ============================= RESPONSIVE ============================= */
   @media (max-width:480px){
-    .card{padding:30px 20px 22px; border-radius:20px;}
-    .socials{grid-template-columns:repeat(5,1fr); gap:8px;}
+    .card{padding:30px 20px 22px; border-radius:16px;}
+    .socials{gap:8px;}
     .username{font-size:19px;}
     .topbar{gap:6px; top:14px; right:14px;}
-    .icon-btn{width:30px; height:30px; border-radius:9px;}
+    .icon-btn{width:30px; height:30px; border-radius:7px;}
     .icon-btn svg{width:14px; height:14px;}
   }
 /* ============================= TWINKLE STARS (mini game) ============================= */
@@ -804,11 +1056,11 @@
   }
   .score-popup{
     position:fixed;
-    font-family:'Space Grotesk',sans-serif;
+    font-family:'Inter',sans-serif;
     font-weight:700;
     font-size:14px;
-    color:#f9ff5e;
-    text-shadow:0 0 8px rgba(249,255,94,.7);
+    color:var(--accent-2);
+    text-shadow:0 0 8px rgba(var(--accent-rgb),.6);
     pointer-events:none;
     z-index:9999;
     animation:scorePop 0.9s ease forwards;
@@ -823,6 +1075,8 @@
 <body>
 <!-- ============================= BACKGROUND LAYERS ============================= -->
 <div class="bg-gradient"></div>
+<div class="bg-spotlight"></div>
+<div class="bg-grid"></div>
 <div class="bg-noise"></div>
 <canvas id="particles"></canvas>
 <div class="shooting-stars" id="shootingStars"></div>
@@ -836,143 +1090,279 @@
 
 <!-- ============================= MAIN PAGE ============================= -->
 <div class="page" id="page">
-  <div class="card">
 
-    <!-- top-right controls: sound + settings -->
-    <div class="topbar">
-      <button class="icon-btn" id="soundToggle" title="Toggle sound">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="soundIcon">
-          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
-          <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
-        </svg>
-      </button>
-      <button class="icon-btn" id="settingsToggle" title="Settings">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <circle cx="12" cy="12" r="3"></circle>
-          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 .33 1.82"></path>
-        </svg>
-      </button>
-      <button class="icon-btn" id="achieveToggle" title="Thành tựu">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4z"></path><path d="M7 5H4a1 1 0 0 0-1 1v1a4 4 0 0 0 4 4M17 5h3a1 1 0 0 1 1 1v1a4 4 0 0 1-4 4"></path></svg>
-      </button>
-      <button class="icon-btn" id="leaderboardToggle" title="Bảng xếp hạng">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"></path></svg>
-      </button>
-      <button class="icon-btn" id="guestbookToggle" title="Sổ lưu bút">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
-      </button>
-    </div>
-
-    <!-- leaderboard panel -->
-    <div class="settings-panel achieve-panel" id="leaderboardPanel">
-      <div class="settings-label">⭐ Top bắt sao</div>
-      <div class="achieve-list" id="leaderboardList"><div class="lb-loading">Đang tải...</div></div>
-      <button class="lb-rename-btn" id="lbRenameBtn">✏️ Đổi tên hiển thị</button>
-    </div>
-
-    <!-- guestbook panel -->
-    <div class="settings-panel achieve-panel guestbook-panel" id="guestbookPanel">
-      <div class="settings-label">📖 Sổ lưu bút</div>
-      <div class="achieve-list gb-list" id="guestbookList"><div class="lb-loading">Đang tải...</div></div>
-      <div class="gb-form">
-        <textarea class="gb-input" id="gbInput" maxlength="140" placeholder="Để lại vài dòng nhé..." rows="2"></textarea>
-        <button class="lb-rename-btn" id="gbSubmit">Gửi lưu bút</button>
+  <!-- ================= NAV ================= -->
+  <nav class="site-nav">
+    <div class="nav-inner">
+      <a href="#hero" class="nav-brand">ThanhAnn</a>
+      <div class="nav-links">
+        <a href="#features">Tính năng</a>
+        <a href="#music">Đang nghe</a>
+        <a href="#snake">Rắn săn mồi</a>
+        <a href="#leaderboard">Xếp hạng</a>
+        <a href="#fortune">Rút quẻ</a>
       </div>
-    </div>
+      <div class="nav-utils">
+        <button class="icon-btn" id="soundToggle" title="Bật/tắt âm thanh" aria-label="Bật/tắt âm thanh">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" id="soundIcon">
+            <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+            <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+          </svg>
+        </button>
+        <button class="icon-btn" id="settingsToggle" title="Cài đặt màu chủ đề" aria-label="Cài đặt màu chủ đề">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 .33 1.82"></path>
+          </svg>
+        </button>
 
-    <!-- achievements panel -->
-    <div class="settings-panel achieve-panel" id="achievePanel">
-      <div class="settings-label">Thành tựu (<span id="achieveCount">0</span>/<span id="achieveTotal">6</span>)</div>
-      <div class="achieve-list" id="achieveList"></div>
-    </div>
-
-    <!-- accent color settings panel -->
-    <div class="settings-panel" id="settingsPanel">
-      <div class="settings-label">Accent color</div>
-      <div class="swatches">
-        <div class="swatch active" style="background:#9d7bff" data-accent="157,123,255" data-accent2="#5ed8c9"></div>
-        <div class="swatch" style="background:#ff7b9d" data-accent="255,123,157" data-accent2="#ffd27b"></div>
-        <div class="swatch" style="background:#5ed8c9" data-accent="94,216,201" data-accent2="#9d7bff"></div>
-        <div class="swatch" style="background:#ffb84d" data-accent="255,184,77" data-accent2="#ff7b9d"></div>
-        <div class="swatch" style="background:#6fc3ff" data-accent="111,195,255" data-accent2="#9d7bff"></div>
-        <div class="swatch" style="background:#7bff9d" data-accent="123,255,157" data-accent2="#5ed8c9"></div>
-      </div>
-    </div>
-
-    <!-- avatar -->
-    <div class="avatar-wrap">
-      <div class="avatar-glow"></div>
-      <img src="https://files.catbox.moe/0iyd0r.jpg" class="avatar" id="avatar" draggable="false" fetchpriority="high" decoding="async">
-      <div class="status-dot"></div>
-    </div>
-
-    <!-- identity -->
-    <div class="identity">
-      <div class="greeting-line" id="greetingLine"></div>
-      <div class="username">
-        <span class="led-name" id="ledName"><span class="led-letter">T</span><span class="led-letter">h</span><span class="led-letter">a</span><span class="led-letter">n</span><span class="led-letter">h</span><span class="led-letter">A</span><span class="led-letter">n</span><span class="led-letter">n</span></span>
-        <svg class="verified" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.39 1.94 3.06-.39 1.04 2.9 2.74 1.49-.62 3.05L22 14l-1.39 2.78.62 3.05-2.74 1.49-1.04 2.9-3.06-.39L12 26l-2.39-2.1L6.55 25.71 5.51 22.81 2.77 21.32 3.39 18.27 2 15.5l1.39-2.78-.62-3.05 2.74-1.49 1.04-2.9 3.06.39z"></path></svg>
-      </div>
-      <div class="typing-line"><span id="typingText"></span><span class="cursor" id="typingCursor">&nbsp;</span></div>
-      <p class="bio">hehe</p>
-
-      <div class="meta-row">
-        <div class="meta-chip">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
-          <span id="statusText">online — 24/7</span>
-        </div>
-        <div class="meta-chip">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-          <span>Yên Phú, Phú Thọ</span>
-        </div>
-        <div class="meta-chip">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v5l3.5 2"></path></svg>
-          <span id="clockText">--:--:--</span>
-        </div>
-        <div class="meta-chip" id="streakChip" title="Số ngày ghé thăm liên tiếp">
-          <span>🔥 <span id="streakCount">0</span></span>
+        <!-- accent color settings panel -->
+        <div class="settings-panel" id="settingsPanel">
+          <div class="settings-label">Accent color</div>
+          <div class="swatches">
+            <div class="swatch active" style="background:#6366f1" data-accent="99,102,241" data-accent2="#818cf8"></div>
+            <div class="swatch" style="background:#10b981" data-accent="16,185,129" data-accent2="#34d399"></div>
+            <div class="swatch" style="background:#0ea5e9" data-accent="14,165,233" data-accent2="#38bdf8"></div>
+            <div class="swatch" style="background:#f59e0b" data-accent="245,158,11" data-accent2="#fbbf24"></div>
+            <div class="swatch" style="background:#f43f5e" data-accent="244,63,94" data-accent2="#fb7185"></div>
+            <div class="swatch" style="background:#8b5cf6" data-accent="139,92,246" data-accent2="#a78bfa"></div>
+          </div>
         </div>
       </div>
     </div>
+  </nav>
 
-    <div class="divider"></div>
+  <main>
 
-    <!-- social buttons -->
-    <div class="socials">
-      <a class="social-btn" data-brand="discord" href="https://discord.com/users/1332642938957729826" title="Discord">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.369A19.79 19.79 0 0 0 16.558 3c-.2.357-.43.84-.59 1.225a18.27 18.27 0 0 0-5.93 0A8.69 8.69 0 0 0 9.45 3 19.79 19.79 0 0 0 5.69 4.369a31.6 31.6 0 0 0-1.8 15.8 19.78 19.78 0 0 0 5.92 3.02c.46-.63.87-1.3 1.2-2.02-.64-.2-1.25-.46-1.83-.77.15-.1.3-.21.44-.32a14.02 14.02 0 0 0 12.1 0c.14.11.29.22.44.32-.58.31-1.19.57-1.83.77.33.72.74 1.39 1.2 2.02 2.41-.61 4.62-1.6 5.92-3.02.52-5.17-.88-9.66-3.74-13.66zM8.68 14.81c-1.23 0-2.25-1.12-2.25-2.5s1-2.5 2.25-2.5c1.24 0 2.28 1.12 2.25 2.5 0 1.38-1.02 2.5-2.25 2.5zm6.64 0c-1.23 0-2.25-1.12-2.25-2.5s1.02-2.5 2.25-2.5c1.24 0 2.28 1.12 2.25 2.5 0 1.38-1.01 2.5-2.25 2.5z"></path></svg>
+    <!-- ================= HERO ================= -->
+    <section class="section hero-section" id="hero">
+
+      <!-- compact profile bar: avatar + name only -->
+      <div class="profile-bar">
+        <div class="avatar-wrap">
+          <div class="avatar-glow"></div>
+          <img src="https://files.catbox.moe/0iyd0r.jpg" class="avatar" id="avatar" draggable="false" fetchpriority="high" decoding="async">
+          <div class="status-dot"></div>
+          <div class="thought-bubble" id="greetingLine"></div>
+        </div>
+        <div class="profile-bar-text">
+          <div class="username">
+            <span class="led-name" id="ledName"><span class="led-letter">T</span><span class="led-letter">h</span><span class="led-letter">a</span><span class="led-letter">n</span><span class="led-letter">h</span><span class="led-letter">A</span><span class="led-letter">n</span><span class="led-letter">n</span></span>
+            <svg class="verified" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.39 1.94 3.06-.39 1.04 2.9 2.74 1.49-.62 3.05L22 14l-1.39 2.78.62 3.05-2.74 1.49-1.04 2.9-3.06-.39L12 26l-2.39-2.1L6.55 25.71 5.51 22.81 2.77 21.32 3.39 18.27 2 15.5l1.39-2.78-.62-3.05 2.74-1.49 1.04-2.9 3.06.39z"></path></svg>
+          </div>
+          <div class="profile-status" id="statusText">online — 24/7</div>
+        </div>
+      </div>
+
+      <!-- everything else, moved below the bar -->
+      <div class="identity">
+        <div class="eyebrow">Hồ sơ cá nhân</div>
+        <div class="typing-line"><span id="typingText"></span><span class="cursor" id="typingCursor">&nbsp;</span></div>
+        <p class="bio">hehe</p>
+
+        <div class="meta-row">
+          <div class="meta-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span>Yên Phú, Phú Thọ</span>
+          </div>
+          <div class="meta-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v5l3.5 2"></path></svg>
+            <span id="clockText">--:--:--</span>
+          </div>
+          <div class="meta-chip" id="streakChip" title="Số ngày ghé thăm liên tiếp">
+            <span>🔥 <span id="streakCount">0</span></span>
+          </div>
+        </div>
+      </div>
+
+      <div class="divider"><span class="divider-mark"></span></div>
+
+      <!-- social buttons -->
+      <div class="socials">
+        <a class="social-btn" data-brand="discord" href="https://discord.com/users/1332642938957729826" title="Discord">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.369A19.79 19.79 0 0 0 16.558 3c-.2.357-.43.84-.59 1.225a18.27 18.27 0 0 0-5.93 0A8.69 8.69 0 0 0 9.45 3 19.79 19.79 0 0 0 5.69 4.369a31.6 31.6 0 0 0-1.8 15.8 19.78 19.78 0 0 0 5.92 3.02c.46-.63.87-1.3 1.2-2.02-.64-.2-1.25-.46-1.83-.77.15-.1.3-.21.44-.32a14.02 14.02 0 0 0 12.1 0c.14.11.29.22.44.32-.58.31-1.19.57-1.83.77.33.72.74 1.39 1.2 2.02 2.41-.61 4.62-1.6 5.92-3.02.52-5.17-.88-9.66-3.74-13.66zM8.68 14.81c-1.23 0-2.25-1.12-2.25-2.5s1-2.5 2.25-2.5c1.24 0 2.28 1.12 2.25 2.5 0 1.38-1.02 2.5-2.25 2.5zm6.64 0c-1.23 0-2.25-1.12-2.25-2.5s1.02-2.5 2.25-2.5c1.24 0 2.28 1.12 2.25 2.5 0 1.38-1.01 2.5-2.25 2.5z"></path></svg>
+        </a>
+        <a class="social-btn" data-brand="github" href="https://github.com/Eriolzz" title="GitHub">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.17c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.48-1.34-5.48-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23.96-.27 1.98-.4 3-.41 1.02.01 2.04.14 3 .41 2.29-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.82 5.63-5.5 5.92.43.37.82 1.1.82 2.22v 3.29c0 .32.21.7.83.58A12 12 0 0 0 12 0z"></path></svg>
+        </a>
+        <a class="social-btn" data-brand="zalo" href="https://zalo.me/0971231041" title="Zalo">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.49 10.2722v-.4496h1.3467v6.3218h-.7704a.576.576 0 01-.5763-.5729l-.0006.0005a3.273 3.273 0 01-1.9372.6321c-1.8138 0-3.2844-1.4697-3.2844-3.2823 0-1.8125 1.4706-3.2822 3.2844-3.2822a3.273 3.273 0 011.9372.6321l.0006.0005zM6.9188 7.7896v.205c0 .3823-.051.6944-.2995 1.0605l-.03.0343c-.0542.0615-.1815.206-.2421.2843L2.024 14.8h4.8948v.7682a.5764.5764 0 01-.5767.5761H0v-.3622c0-.4436.1102-.6414.2495-.8476L4.8582 9.23H.1922V7.7896h6.7266zm8.5513 8.3548a.4805.4805 0 01-.4803-.4798v-7.875h1.4416v8.3548H15.47zM20.6934 9.6C22.52 9.6 24 11.0807 24 12.9044c0 1.8252-1.4801 3.306-3.3066 3.306-1.8264 0-3.3066-1.4808-3.3066-3.306 0-1.8237 1.4802-3.3044 3.3066-3.3044zm-10.1412 5.253c1.0675 0 1.9324-.8645 1.9324-1.9312 0-1.065-.865-1.9295-1.9324-1.9295s-1.9324.8644-1.9324 1.9295c0 1.0667.865 1.9312 1.9324 1.9312zm10.1412-.0033c1.0737 0 1.945-.8707 1.945-1.9453 0-1.073-.8713-1.9436-1.945-1.9436-1.0753 0-1.945.8706-1.945 1.9436 0 1.0746.8697 1.9453 1.945 1.9453z"/></svg>
+        </a>
+      <a class="social-btn" data-brand="spotify" href="https://open.spotify.com/user/31zf5fxifykppyawkfksull6ynrq" title="Spotify">
+    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.65 14.4c-.2.3-.6.4-.9.2-2.4-1.47-5.43-1.8-9-.99-.34.08-.68-.13-.76-.47-.08-.34.13-.68.47-.76 3.9-.89 7.25-.51 9.94 1.13.3.18.4.58.25.89zm1.24-2.76c-.24.38-.75.5-1.13.26-2.75-1.69-6.94-2.18-10.19-1.19-.42.13-.86-.11-.99-.52-.13-.42.11-.86.52-.99 3.72-1.13 8.34-.58 11.52 1.36.39.24.51.75.27 1.08zm.11-2.87C14.85 8.88 9.61 8.7 6.37 9.67c-.5.15-1.03-.13-1.18-.63-.15-.5.13-1.03.63-1.18 3.73-1.13 9.93-.91 13.84 1.37.46.27.62.86.35 1.32-.27.46-.87.62-1.01.22z"/></svg>
       </a>
-      <a class="social-btn" data-brand="github" href="https://github.com/Eriolzz" title="GitHub">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.17c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.48-1.34-5.48-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23.96-.27 1.98-.4 3-.41 1.02.01 2.04.14 3 .41 2.29-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.82 5.63-5.5 5.92.43.37.82 1.1.82 2.22v 3.29c0 .32.21.7.83.58A12 12 0 0 0 12 0z"></path></svg>
-      </a>
-      <a class="social-btn" data-brand="zalo" href="https://zalo.me/0971231041" title="Zalo">
-  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.49 10.2722v-.4496h1.3467v6.3218h-.7704a.576.576 0 01-.5763-.5729l-.0006.0005a3.273 3.273 0 01-1.9372.6321c-1.8138 0-3.2844-1.4697-3.2844-3.2823 0-1.8125 1.4706-3.2822 3.2844-3.2822a3.273 3.273 0 011.9372.6321l.0006.0005zM6.9188 7.7896v.205c0 .3823-.051.6944-.2995 1.0605l-.03.0343c-.0542.0615-.1815.206-.2421.2843L2.024 14.8h4.8948v.7682a.5764.5764 0 01-.5767.5761H0v-.3622c0-.4436.1102-.6414.2495-.8476L4.8582 9.23H.1922V7.7896h6.7266zm8.5513 8.3548a.4805.4805 0 01-.4803-.4798v-7.875h1.4416v8.3548H15.47zM20.6934 9.6C22.52 9.6 24 11.0807 24 12.9044c0 1.8252-1.4801 3.306-3.3066 3.306-1.8264 0-3.3066-1.4808-3.3066-3.306 0-1.8237 1.4802-3.3044 3.3066-3.3044zm-10.1412 5.253c1.0675 0 1.9324-.8645 1.9324-1.9312 0-1.065-.865-1.9295-1.9324-1.9295s-1.9324.8644-1.9324 1.9295c0 1.0667.865 1.9312 1.9324 1.9312zm10.1412-.0033c1.0737 0 1.945-.8707 1.945-1.9453 0-1.073-.8713-1.9436-1.945-1.9436-1.0753 0-1.945.8706-1.945 1.9436 0 1.0746.8697 1.9453 1.945 1.9453z"/></svg>
-      </a>
-    <a class="social-btn" data-brand="spotify" href="https://open.spotify.com/user/31zf5fxifykppyawkfksull6ynrq" title="Spotify">
-  <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.65 14.4c-.2.3-.6.4-.9.2-2.4-1.47-5.43-1.8-9-.99-.34.08-.68-.13-.76-.47-.08-.34.13-.68.47-.76 3.9-.89 7.25-.51 9.94 1.13.3.18.4.58.25.89zm1.24-2.76c-.24.38-.75.5-1.13.26-2.75-1.69-6.94-2.18-10.19-1.19-.42.13-.86-.11-.99-.52-.13-.42.11-.86.52-.99 3.72-1.13 8.34-.58 11.52 1.36.39.24.51.75.27 1.08zm.11-2.87C14.85 8.88 9.61 8.7 6.37 9.67c-.5.15-1.03-.13-1.18-.63-.15-.5.13-1.03.63-1.18 3.73-1.13 9.93-.91 13.84 1.37.46.27.62.86.35 1.32-.27.46-.87.62-1.01.22z"/></svg>
-    </a>
-      <a class="social-btn" data-brand="facebook" href="https://www.facebook.com/share/1JNWxJNGPX/" title="Facebook">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.84c0-2.51 1.49-3.9 3.77-3.9 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.91h-2.34v7.03C18.34 21.21 22 17.1 22 12.06z"></path></svg>
-      </a>
-    </div>
+        <a class="social-btn" data-brand="facebook" href="https://www.facebook.com/share/1JNWxJNGPX/" title="Facebook">
+          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.84c0-2.51 1.49-3.9 3.77-3.9 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.91h-2.34v7.03C18.34 21.21 22 17.1 22 12.06z"></path></svg>
+        </a>
+      </div>
+    </section>
 
+    <!-- ================= FEATURES ================= -->
+    <section class="section" id="features">
+      <div class="section-head">
+        <div class="section-eyebrow">Hoạt động</div>
+        <div class="section-title">Tính năng &amp; thống kê</div>
+        <p class="section-desc">Bắt ngôi sao xuất hiện ngẫu nhiên trên trang để ghi điểm, giữ streak ghé thăm mỗi ngày, và mở khóa thành tựu ẩn.</p>
+      </div>
 
-
-    <!-- footer: visitor counter -->
-    <div class="footer-row">
-      <div class="footer-left">
-        <div class="visitor-count">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
-          <span>visit #<b id="visitorCount">0</b></span>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="feature-card-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+          </div>
+          <div class="feature-card-label">Lượt ghé thăm</div>
+          <div class="feature-card-stat" id="visitorCount">0</div>
         </div>
-        <div class="visitor-count star-score" title="Bắt ngôi sao xuất hiện ngẫu nhiên để ghi điểm ⭐">
-          <span>⭐ <b id="starScore">0</b></span>
+        <div class="feature-card">
+          <div class="feature-card-icon">⭐</div>
+          <div class="feature-card-label">Điểm bắt sao</div>
+          <div class="feature-card-stat" id="starScore">0</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-card-icon">🔥</div>
+          <div class="feature-card-label">Streak ghé thăm</div>
+          <div class="feature-card-stat" id="streakCountFeature">0</div>
         </div>
       </div>
-      <span>VN.2026</span>
-    </div>
 
-  </div>
+      <div class="section-panel" id="achievePanel">
+        <div class="settings-label">Thành tựu (<span id="achieveCount">0</span>/<span id="achieveTotal">6</span>)</div>
+        <div class="achieve-list" id="achieveList"></div>
+      </div>
+    </section>
+
+    <!-- ================= MUSIC ================= -->
+    <section class="section" id="music">
+      <div class="section-head">
+        <div class="section-eyebrow">Playlist</div>
+        <div class="section-title">Đang nghe</div>
+      </div>
+      <div class="music-card" id="musicCard">
+        <div class="mc-now">
+          <div class="mc-cover-wrap"><img class="mc-cover" id="mcCover" src="" alt="cover" loading="lazy" decoding="async"></div>
+          <div class="mc-meta">
+            <div class="mc-title" id="mcTitle">—</div>
+            <div class="mc-artist" id="mcArtist">—</div>
+          </div>
+          <div class="mc-eq" id="mcEq"><span></span><span></span><span></span><span></span><span></span></div>
+        </div>
+        <div class="mc-progress-wrap">
+          <input type="range" class="mc-progress" id="mcProgress" value="0" min="0" max="100" step="0.1">
+          <div class="mc-times"><span id="mcCurrent">0:00</span><span id="mcDuration">0:00</span></div>
+        </div>
+        <div class="mc-controls">
+          <button class="mc-btn" id="mcShuffle" title="Shuffle">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line></svg>
+          </button>
+          <button class="mc-btn" id="mcPrev" title="Previous">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+          </button>
+          <button class="mc-play-btn" id="mcPlay" title="Play/Pause">
+            <svg id="mcPlayIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          </button>
+          <button class="mc-btn" id="mcNext" title="Next">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2-8.14L11.03 12 8 14.14V9.86zM16 6h2v12h-2z"/></svg>
+          </button>
+          <button class="mc-btn" id="mcRepeat" title="Repeat">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
+          </button>
+        </div>
+        <div class="mc-vol-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg>
+          <input type="range" class="mc-vol" id="mcVol" min="0" max="1" step="0.01" value="0.7">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
+        </div>
+        <button class="mc-playlist-toggle" id="mcToggle">
+          <span>Playlist</span>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+        <div class="mc-playlist" id="mcPlaylist"></div>
+      </div>
+    </section>
+
+    <!-- ================= SNAKE GAME ================= -->
+    <section class="section" id="snake">
+      <div class="section-head">
+        <div class="section-eyebrow">Trò chơi</div>
+        <div class="section-title">🐍 Rắn săn mồi</div>
+        <p class="section-desc">Vuốt trên bàn chơi hoặc dùng nút bấm để đổi hướng. Ăn mồi để dài ra, đừng đâm vào chính mình!</p>
+      </div>
+      <div class="section-panel snake-panel">
+        <div class="snake-hud">
+          <div class="snake-hud-item">Điểm: <b id="snakeScore">0</b></div>
+          <div class="snake-hud-item">Kỷ lục: <b id="snakeBest">0</b></div>
+        </div>
+        <div class="snake-board-wrap" id="snakeBoardWrap">
+          <canvas id="snakeCanvas" width="280" height="280"></canvas>
+          <div class="snake-overlay" id="snakeOverlay">
+            <div class="snake-overlay-text" id="snakeOverlayText">Bấm để bắt đầu chơi</div>
+            <button class="lb-rename-btn" id="snakeStartBtn">▶️ Chơi</button>
+          </div>
+        </div>
+        <div class="snake-dpad">
+          <button class="snake-dbtn" id="snakeUp" aria-label="Lên">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"></polyline></svg>
+          </button>
+          <button class="snake-dbtn" id="snakeLeft" aria-label="Trái">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+          </button>
+          <button class="snake-dbtn" id="snakeDown" aria-label="Xuống">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"></polyline></svg>
+          </button>
+          <button class="snake-dbtn" id="snakeRight" aria-label="Phải">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= LEADERBOARD ================= -->
+    <section class="section" id="leaderboard">
+      <div class="section-head">
+        <div class="section-eyebrow">Thi đua</div>
+        <div class="section-title">⭐ Top bắt sao</div>
+      </div>
+      <div class="section-panel" id="leaderboardPanel">
+        <div class="achieve-list" id="leaderboardList"><div class="lb-loading">Đang tải...</div></div>
+        <button class="lb-rename-btn" id="lbRenameBtn">✏️ Đổi tên hiển thị</button>
+      </div>
+    </section>
+
+    <!-- ================= SNAKE LEADERBOARD ================= -->
+    <section class="section" id="snake-leaderboard">
+      <div class="section-head">
+        <div class="section-eyebrow">Thi đua</div>
+        <div class="section-title">🐍 Top rắn săn mồi</div>
+      </div>
+      <div class="section-panel">
+        <div class="achieve-list" id="snakeLeaderboardList"><div class="lb-loading">Đang tải...</div></div>
+      </div>
+    </section>
+
+    <!-- ================= FORTUNE ================= -->
+    <section class="section" id="fortune">
+      <div class="section-head">
+        <div class="section-eyebrow">Vui thôi</div>
+        <div class="section-title">🎴 Rút quẻ hôm nay</div>
+        <p class="section-desc">Bấm để xem một câu ngẫu nhiên — quẻ hôm nay sẽ được lưu lại, nhưng cứ bấm thoải mái để đổi vận!</p>
+      </div>
+      <div class="section-panel fortune-panel">
+        <div class="fortune-card" id="fortuneCard">
+          <div class="fortune-icon">🎴</div>
+          <div class="fortune-text" id="fortuneText">Bấm nút bên dưới để rút quẻ đầu tiên nhé</div>
+        </div>
+        <button class="lb-rename-btn" id="fortuneBtn">🔮 Rút quẻ</button>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="site-footer">
+    <span>© ThanhAnn</span>
+    <span>VN.2026</span>
+  </footer>
+
+</div>
 </div>
 
 <!-- cursor glow -->
@@ -1001,6 +1391,15 @@
   </div>
 </div>
 
+<div class="egg-overlay" id="konamiOverlay">
+  <div class="egg-card">
+    <div class="egg-emoji">🕹️✨</div>
+    <div class="egg-title">Konami Code!</div>
+    <div class="egg-text">Không ngờ bạn lại biết combo huyền thoại ↑↑↓↓←→←→BA. Đỉnh thật đấy, dân chơi hệ retro 🎮</div>
+    <button class="egg-close" id="konamiClose">Đóng lại</button>
+  </div>
+</div>
+
 <!-- name input overlay for leaderboard -->
 <div class="egg-overlay" id="nameOverlay">
   <div class="egg-card">
@@ -1014,49 +1413,6 @@
 
 <!-- ============================= MUSIC PLAYER ============================= -->
 <audio id="mcAudio" preload="none"></audio>
-<div class="page" id="musicPage" style="padding-top:0;min-height:unset;">
-  <div class="music-card" id="musicCard">
-    <div class="mc-now">
-      <div class="mc-cover-wrap"><img class="mc-cover" id="mcCover" src="" alt="cover" loading="lazy" decoding="async"></div>
-      <div class="mc-meta">
-        <div class="mc-title" id="mcTitle">—</div>
-        <div class="mc-artist" id="mcArtist">—</div>
-      </div>
-      <div class="mc-eq" id="mcEq"><span></span><span></span><span></span><span></span><span></span></div>
-    </div>
-    <div class="mc-progress-wrap">
-      <input type="range" class="mc-progress" id="mcProgress" value="0" min="0" max="100" step="0.1">
-      <div class="mc-times"><span id="mcCurrent">0:00</span><span id="mcDuration">0:00</span></div>
-    </div>
-    <div class="mc-controls">
-      <button class="mc-btn" id="mcShuffle" title="Shuffle">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"></polyline><line x1="4" y1="20" x2="21" y2="3"></line><polyline points="21 16 21 21 16 21"></polyline><line x1="15" y1="15" x2="21" y2="21"></line></svg>
-      </button>
-      <button class="mc-btn" id="mcPrev" title="Previous">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
-      </button>
-      <button class="mc-play-btn" id="mcPlay" title="Play/Pause">
-        <svg id="mcPlayIcon" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
-      </button>
-      <button class="mc-btn" id="mcNext" title="Next">
-        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2-8.14L11.03 12 8 14.14V9.86zM16 6h2v12h-2z"/></svg>
-      </button>
-      <button class="mc-btn" id="mcRepeat" title="Repeat">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="17 1 21 5 17 9"></polyline><path d="M3 11V9a4 4 0 0 1 4-4h14"></path><polyline points="7 23 3 19 7 15"></polyline><path d="M21 13v2a4 4 0 0 1-4 4H3"></path></svg>
-      </button>
-    </div>
-    <div class="mc-vol-row">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon></svg>
-      <input type="range" class="mc-vol" id="mcVol" min="0" max="1" step="0.01" value="0.7">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path></svg>
-    </div>
-    <button class="mc-playlist-toggle" id="mcToggle">
-      <span>Playlist</span>
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
-    </button>
-    <div class="mc-playlist" id="mcPlaylist"></div>
-  </div>
-</div>
 
 <script>
 /* =========================================================================
@@ -1107,7 +1463,9 @@ const ACHIEVEMENTS = {
   stars:  { icon:'⭐', title:'Bắt sao',      desc:'Bắt được 5 ngôi sao' },
   time:   { icon:'⏳', title:'Bạn đồng hành', desc:'Ở lại trang 2 phút' },
   streak: { icon:'🔥', title:'Bền bỉ',       desc:'Ghé thăm 3 ngày liên tiếp' },
-  guestbook: { icon:'📖', title:'Để lại dấu vết', desc:'Viết vào sổ lưu bút' },
+  fortune:{ icon:'🎴', title:'Xem vận may',  desc:'Rút một quẻ' },
+  konami: { icon:'🕹️', title:'Dân chơi hệ retro', desc:'Nhập đúng Konami code' },
+  snake:  { icon:'🐍', title:'Thợ săn mồi',  desc:'Ăn được 5 mồi trong 1 ván rắn' },
 };
 const ACHIEVE_KEY = 'profile-achievements';
 function getUnlocked(){
@@ -1213,6 +1571,7 @@ async function loadLeaderboard(){
   }
 }
 window.loadLeaderboard = loadLeaderboard;
+loadLeaderboard();
 
 function showFinale(){
   const overlay = document.getElementById('finaleOverlay');
@@ -1231,6 +1590,12 @@ function showFinale(){
   const finaleClose = document.getElementById('finaleClose');
   if (finaleClose) finaleClose.addEventListener('click', () => finaleOverlay.classList.remove('open'));
   if (finaleOverlay) finaleOverlay.addEventListener('click', (e) => { if (e.target === finaleOverlay) finaleOverlay.classList.remove('open'); });
+})();
+(function initKonamiOverlay(){
+  const konamiOverlay = document.getElementById('konamiOverlay');
+  const konamiClose = document.getElementById('konamiClose');
+  if (konamiClose) konamiClose.addEventListener('click', () => konamiOverlay.classList.remove('open'));
+  if (konamiOverlay) konamiOverlay.addEventListener('click', (e) => { if (e.target === konamiOverlay) konamiOverlay.classList.remove('open'); });
 })();
 
 renderAchieveList();
@@ -1402,18 +1767,19 @@ renderAchieveList();
 (function achievePanelToggle(){
   const toggleBtn = document.getElementById('achieveToggle');
   const panel = document.getElementById('achievePanel');
-  if (!toggleBtn || !panel) return;
 
-  toggleBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    closeOtherPanels(panel);
-    panel.classList.toggle('open');
-  });
-  document.addEventListener('click', (e) => {
-    if (!panel.contains(e.target) && e.target !== toggleBtn){
-      panel.classList.remove('open');
-    }
-  });
+  if (toggleBtn && panel){
+    toggleBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      closeOtherPanels(panel);
+      panel.classList.toggle('open');
+    });
+    document.addEventListener('click', (e) => {
+      if (!panel.contains(e.target) && e.target !== toggleBtn){
+        panel.classList.remove('open');
+      }
+    });
+  }
 
   setTimeout(() => unlockAchievement('time'), 120000);
 })();
@@ -1472,114 +1838,331 @@ renderAchieveList();
   if (nameOverlay) nameOverlay.addEventListener('click', (e) => { if (e.target === nameOverlay) closeNameOverlay(false); });
 })();
 
-/* ---------------------------- GUESTBOOK (Firebase Firestore) ---------------------------- */
-function fmtGbTime(ts){
-  try{
-    const d = new Date(ts);
-    return d.toLocaleDateString('vi-VN', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
-  }catch(e){ return ''; }
+/* ---------------------------- FORTUNE DRAW ---------------------------- */
+const FORTUNES = [
+  'Hôm nay là ngày tốt để bấm bừa vào mấy cái nút trên web người khác 🎲',
+  'Nếu đang lười, cứ lười thêm 5 phút nữa rồi tính tiếp 😌',
+  'Một ly trà sữa đúng lúc bằng vạn lời động viên 🧋',
+  'Wifi hôm nay sẽ mượt, đừng lo 📶',
+  'Ai đó đang nhắc tới bạn — hoặc không, nhưng cứ tin vậy cho vui 👀',
+  'Hôm nay hợp code bug ít hơn thường ngày một chút 🐛',
+  'Nhớ uống nước, dù quẻ này không liên quan gì đến bói toán cả 💧',
+  'Bấm nút này lần nữa đi, biết đâu ra quẻ hay hơn 🔁',
+  'Điều bạn đang tìm kiếm ở rất gần, chỉ là chưa cuộn tới thôi 📜',
+  'Người dưng hôm nay sẽ cười với bạn nhiều hơn bình thường 😄',
+  'Ngủ sớm nay có khi lại là quyết định đúng đắn nhất tuần 🌙',
+  'Có một ngôi sao đang chờ bạn bắt ở đâu đó trên trang này ⭐',
+  'Đổi màu theme thử xem, biết đâu đổi vận luôn 🎨',
+  'Việc hôm nay để hôm nay, việc mai để... mai tính 🙃',
+  'Bạn sắp mở khóa một điều thú vị nếu tiếp tục khám phá trang này 🔓',
+  'Không phải mọi thứ cần lý do — cứ vui là được 🎈',
+  'Một tin nhắn cũ đáng để trả lời hôm nay đấy 💬',
+  'Hôm nay hợp thử món ăn mới hơn là ăn món quen 🍜',
+];
+
+function todayKey(){
+  return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Ho_Chi_Minh' });
 }
 
-async function loadGuestbook(){
-  const listEl = document.getElementById('guestbookList');
+function drawFortune(forceNew){
+  const textEl = document.getElementById('fortuneText');
+  const card = document.getElementById('fortuneCard');
+  if (!textEl) return;
+
+  let text;
+  if (!forceNew){
+    const saved = localStorage.getItem('fortune-' + todayKey());
+    if (saved){ textEl.textContent = saved; return; }
+  }
+  text = FORTUNES[Math.floor(Math.random() * FORTUNES.length)];
+  localStorage.setItem('fortune-' + todayKey(), text);
+
+  if (card){
+    card.classList.remove('flip');
+    void card.offsetWidth; // restart animation
+    card.classList.add('flip');
+  }
+  textEl.textContent = text;
+  unlockAchievement('fortune');
+}
+
+(function fortuneUI(){
+  const btn = document.getElementById('fortuneBtn');
+  if (!btn) return;
+
+  // show today's saved fortune on load, if any
+  const saved = localStorage.getItem('fortune-' + todayKey());
+  if (saved){
+    const textEl = document.getElementById('fortuneText');
+    if (textEl) textEl.textContent = saved;
+  }
+
+  btn.addEventListener('click', () => drawFortune(true));
+})();
+
+/* ---------------------------- KONAMI CODE EASTER EGG ---------------------------- */
+(function konamiCode(){
+  const seq = ['ArrowUp','ArrowUp','ArrowDown','ArrowDown','ArrowLeft','ArrowRight','ArrowLeft','ArrowRight','b','a'];
+  let pos = 0;
+
+  document.addEventListener('keydown', (e) => {
+    const key = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+    if (key === seq[pos]){
+      pos++;
+      if (pos === seq.length){
+        pos = 0;
+        triggerKonami();
+      }
+    } else {
+      pos = (key === seq[0]) ? 1 : 0;
+    }
+  });
+
+  function triggerKonami(){
+    unlockAchievement('konami');
+    showToast('Konami code! Bạn là huyền thoại 🕹️', '🎮');
+    const overlay = document.getElementById('konamiOverlay');
+    if (overlay) overlay.classList.add('open');
+    if (window.__profileConfettiBurst) window.__profileConfettiBurst(window.innerWidth/2, window.innerHeight/2);
+  }
+})();
+
+/* ---------------------------- SNAKE GAME ---------------------------- */
+async function submitSnakeScore(score){
+  if (!window.__fb) return;
+  try{
+    const { db, doc, setDoc } = window.__fb;
+    const id = getPlayerId();
+    const name = (getPlayerName() || 'Ẩn danh').slice(0, 20);
+    await setDoc(doc(db, 'snake-leaderboard', id), {
+      name,
+      score: Math.max(0, Math.min(9999, score)),
+      updatedAt: Date.now()
+    });
+  }catch(err){ console.warn('submitSnakeScore failed:', err); }
+}
+
+async function loadSnakeLeaderboard(){
+  const listEl = document.getElementById('snakeLeaderboardList');
   if (!listEl) return;
   if (!window.__fb){
-    listEl.innerHTML = '<div class="lb-loading">Đang kết nối...</div>';
-    setTimeout(loadGuestbook, 800);
+    listEl.innerHTML = '<div class="lb-loading">Đang kết nối bảng xếp hạng...</div>';
+    setTimeout(loadSnakeLeaderboard, 800);
     return;
   }
   listEl.innerHTML = '<div class="lb-loading">Đang tải...</div>';
   try{
     const { db, collection, query, orderBy, limit, getDocs } = window.__fb;
-    const q = query(collection(db, 'guestbook'), orderBy('createdAt', 'desc'), limit(30));
+    const q = query(collection(db, 'snake-leaderboard'), orderBy('score', 'desc'), limit(10));
     const snap = await getDocs(q);
-    const entries = [];
-    snap.forEach(d => entries.push(d.data()));
-    if (entries.length === 0){
-      listEl.innerHTML = '<div class="lb-loading">Chưa có ai để lại lưu bút, viết vài dòng đi!</div>';
+    const top = [];
+    snap.forEach(d => top.push({ id: d.id, ...d.data() }));
+    const myId = getPlayerId();
+    if (top.length === 0){
+      listEl.innerHTML = '<div class="lb-loading">Chưa có ai chơi rắn cả, làm người đầu tiên đi!</div>';
       return;
     }
-    listEl.innerHTML = entries.map(e => `
-      <div class="gb-item">
-        <div class="gb-name">${escapeHtml(e.name || 'Ẩn danh')}</div>
-        <div class="gb-msg">${escapeHtml(e.message || '')}</div>
-        <div class="gb-time">${fmtGbTime(e.createdAt)}</div>
+    listEl.innerHTML = top.map((e, i) => `
+      <div class="lb-row ${e.id === myId ? 'me' : ''}">
+        <div class="lb-rank">${i===0?'🥇':i===1?'🥈':i===2?'🥉':(i+1)}</div>
+        <div class="lb-name">${escapeHtml(e.name || 'Ẩn danh')}${e.id === myId ? ' (bạn)' : ''}</div>
+        <div class="lb-score">${e.score || 0}</div>
       </div>
     `).join('');
   }catch(err){
-    console.warn('loadGuestbook failed:', err);
+    console.warn('loadSnakeLeaderboard failed:', err);
     if (err && err.code === 'permission-denied'){
-      listEl.innerHTML = '<div class="lb-loading">Chưa được cấp quyền đọc collection "guestbook" 🔒</div>';
+      listEl.innerHTML = '<div class="lb-loading">Chưa được cấp quyền đọc collection "snake-leaderboard" 🔒</div>';
     } else {
-      listEl.innerHTML = '<div class="lb-loading">Không tải được sổ lưu bút 😢</div>';
+      listEl.innerHTML = '<div class="lb-loading">Không tải được bảng xếp hạng 😢</div>';
     }
   }
 }
-window.loadGuestbook = loadGuestbook;
+window.loadSnakeLeaderboard = loadSnakeLeaderboard;
+loadSnakeLeaderboard();
 
-(function guestbookUI(){
-  const toggleBtn = document.getElementById('guestbookToggle');
-  const panel = document.getElementById('guestbookPanel');
-  const input = document.getElementById('gbInput');
-  const submitBtn = document.getElementById('gbSubmit');
-  if (!toggleBtn || !panel) return;
+(function snakeGame(){
+  const canvas = document.getElementById('snakeCanvas');
+  if (!canvas) return;
+  const ctx = canvas.getContext('2d');
+  const boardWrap = document.getElementById('snakeBoardWrap');
+  const overlay = document.getElementById('snakeOverlay');
+  const overlayText = document.getElementById('snakeOverlayText');
+  const startBtn = document.getElementById('snakeStartBtn');
+  const scoreEl = document.getElementById('snakeScore');
+  const bestEl = document.getElementById('snakeBest');
 
-  toggleBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    closeOtherPanels(panel);
-    panel.classList.toggle('open');
-    if (panel.classList.contains('open')) loadGuestbook();
-  });
-  document.addEventListener('click', (e) => {
-    if (!panel.contains(e.target) && e.target !== toggleBtn){
-      panel.classList.remove('open');
-    }
-  });
+  const GRID = 14;
+  const CELL = canvas.width / GRID;
 
-  if (submitBtn) submitBtn.addEventListener('click', async () => {
-    const msg = (input.value || '').trim().slice(0, 140);
-    if (!msg) return;
+  let snake, dir, nextDir, food, score, loopId, state; // state: 'idle' | 'playing' | 'over'
+  const SPEED_START = 160;
 
-    const lastPost = parseInt(localStorage.getItem('gb-last-post') || '0', 10);
-    if (Date.now() - lastPost < 20000){
-      showToast('Từ từ đã, đợi vài giây rồi gửi tiếp nhé 🙂', '⏳');
+  function styleColor(varName){
+    return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+  }
+
+  function randomFood(){
+    let pos;
+    do{
+      pos = { x: Math.floor(Math.random()*GRID), y: Math.floor(Math.random()*GRID) };
+    } while (snake.some(s => s.x === pos.x && s.y === pos.y));
+    return pos;
+  }
+
+  function reset(){
+    snake = [{x:7,y:7},{x:6,y:7},{x:5,y:7}];
+    dir = {x:1,y:0};
+    nextDir = {x:1,y:0};
+    food = randomFood();
+    score = 0;
+    scoreEl.textContent = '0';
+  }
+
+  function draw(){
+    const bg = styleColor('--bg-2') || '#12141c';
+    const accent = styleColor('--accent') || '#6366f1';
+    const accent2 = styleColor('--accent-2') || '#818cf8';
+
+    ctx.fillStyle = bg;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // food
+    ctx.fillStyle = '#f43f5e';
+    const fp = 2;
+    ctx.beginPath();
+    ctx.roundRect(food.x*CELL+fp, food.y*CELL+fp, CELL-fp*2, CELL-fp*2, 5);
+    ctx.fill();
+
+    // snake
+    snake.forEach((seg, i) => {
+      ctx.fillStyle = i === 0 ? accent2 : accent;
+      const p = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(seg.x*CELL+p, seg.y*CELL+p, CELL-p*2, CELL-p*2, 4);
+      ctx.fill();
+    });
+  }
+
+  function setDir(x, y){
+    if (state !== 'playing') return;
+    // không cho quay ngược 180 độ
+    if (dir.x === -x && dir.y === -y) return;
+    nextDir = {x, y};
+  }
+
+  function tick(){
+    dir = nextDir;
+    const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+
+    // va chạm tường hoặc thân
+    if (head.x < 0 || head.x >= GRID || head.y < 0 || head.y >= GRID ||
+        snake.some(s => s.x === head.x && s.y === head.y)){
+      gameOver();
       return;
     }
-    if (!window.__fb){
-      showToast('Chưa kết nối được, thử lại sau nhé', '⚠️');
-      return;
+
+    snake.unshift(head);
+
+    if (head.x === food.x && head.y === food.y){
+      score++;
+      scoreEl.textContent = score;
+      if (score >= 5) unlockAchievement('snake');
+      food = randomFood();
+    } else {
+      snake.pop();
     }
 
-    submitBtn.disabled = true;
-    submitBtn.textContent = 'Đang gửi...';
-    try{
-      const { db, collection, addDoc } = window.__fb;
-      const name = (getPlayerName() || 'Ẩn danh').slice(0, 20);
-      await addDoc(collection(db, 'guestbook'), {
-        name,
-        message: msg,
-        createdAt: Date.now()
-      });
-      input.value = '';
-      localStorage.setItem('gb-last-post', Date.now());
-      unlockAchievement('guestbook');
-      showToast('Đã gửi lưu bút, cảm ơn bạn!', '📖');
-      loadGuestbook();
-    }catch(err){
-      console.warn('guestbook submit failed:', err);
-      if (err && err.code === 'permission-denied'){
-        showToast('Firestore đang chặn quyền ghi collection "guestbook" — cần cập nhật Security Rules', '🔒');
-      } else {
-        showToast('Gửi thất bại, thử lại nhé', '⚠️');
+    draw();
+  }
+
+  function speedFor(score){
+    return Math.max(70, SPEED_START - score * 6);
+  }
+
+  function runLoop(){
+    clearInterval(loopId);
+    const step = () => {
+      if (state !== 'playing') return;
+      tick();
+      if (state === 'playing'){
+        loopId = setTimeout(step, speedFor(score));
       }
-    }finally{
-      submitBtn.disabled = false;
-      submitBtn.textContent = 'Gửi lưu bút';
+    };
+    loopId = setTimeout(step, speedFor(score));
+  }
+
+  function startGame(){
+    reset();
+    state = 'playing';
+    window.__snakeActive = true;
+    overlay.classList.add('hidden');
+    draw();
+    runLoop();
+  }
+
+  function gameOver(){
+    state = 'over';
+    window.__snakeActive = false;
+    clearTimeout(loopId);
+
+    const best = parseInt(localStorage.getItem('snake-best') || '0', 10);
+    if (score > best){
+      localStorage.setItem('snake-best', score);
+      bestEl.textContent = score;
     }
+    submitSnakeScore(score).then(loadSnakeLeaderboard);
+
+    overlayText.innerHTML = `Game Over 🐍<br>Điểm của bạn: <b>${score}</b>`;
+    startBtn.textContent = '🔁 Chơi lại';
+    overlay.classList.remove('hidden');
+  }
+
+  // init display
+  bestEl.textContent = localStorage.getItem('snake-best') || '0';
+  state = 'idle';
+  reset();
+  draw();
+
+  startBtn.addEventListener('click', startGame);
+
+  // keyboard
+  document.addEventListener('keydown', (e) => {
+    if (['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+    if (state !== 'playing') return;
+    if (e.key === 'ArrowUp')    { e.preventDefault(); setDir(0,-1); }
+    else if (e.key === 'ArrowDown'){ e.preventDefault(); setDir(0,1); }
+    else if (e.key === 'ArrowLeft'){ e.preventDefault(); setDir(-1,0); }
+    else if (e.key === 'ArrowRight'){ e.preventDefault(); setDir(1,0); }
   });
+
+  // on-screen d-pad
+  const upBtn = document.getElementById('snakeUp');
+  const downBtn = document.getElementById('snakeDown');
+  const leftBtn = document.getElementById('snakeLeft');
+  const rightBtn = document.getElementById('snakeRight');
+  if (upBtn) upBtn.addEventListener('click', () => setDir(0,-1));
+  if (downBtn) downBtn.addEventListener('click', () => setDir(0,1));
+  if (leftBtn) leftBtn.addEventListener('click', () => setDir(-1,0));
+  if (rightBtn) rightBtn.addEventListener('click', () => setDir(1,0));
+
+  // swipe controls
+  let touchX = 0, touchY = 0;
+  boardWrap.addEventListener('touchstart', (e) => {
+    const t = e.touches[0];
+    touchX = t.clientX; touchY = t.clientY;
+  }, {passive:true});
+  boardWrap.addEventListener('touchend', (e) => {
+    const t = e.changedTouches[0];
+    const dx = t.clientX - touchX;
+    const dy = t.clientY - touchY;
+    if (Math.abs(dx) < 18 && Math.abs(dy) < 18) return;
+    if (Math.abs(dx) > Math.abs(dy)) setDir(dx > 0 ? 1 : -1, 0);
+    else setDir(0, dy > 0 ? 1 : -1);
+  }, {passive:true});
 })();
 
-/* ---------------------------- MUSIC PLAYER ---------------------------- */
+
 (function musicPlayer(){
 
   /* ── PLAYLIST — chỉ cần sửa array này để thêm/đổi bài ── */
@@ -1802,6 +2385,7 @@ window.loadGuestbook = loadGuestbook;
   /* ── Keyboard ── */
   document.addEventListener('keydown', e => {
     if (['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+    if (window.__snakeActive) return; // đừng đổi bài khi đang chơi rắn bằng phím mũi tên
     if (e.code==='Space')     { e.preventDefault(); togglePlay(); }
     if (e.code==='ArrowRight') nextSong();
     if (e.code==='ArrowLeft')  prevSong();
@@ -1893,6 +2477,8 @@ window.loadGuestbook = loadGuestbook;
   localStorage.setItem('visit-streak', streak);
   localStorage.setItem('visit-streak-date', today);
   el.textContent = streak;
+  const elFeature = document.getElementById('streakCountFeature');
+  if (elFeature) elFeature.textContent = streak;
 
   if (streak >= 3 && window.unlockAchievement) window.unlockAchievement('streak');
 })();
@@ -2018,7 +2604,7 @@ window.loadGuestbook = loadGuestbook;
 (function avatarConfetti(){
   const avatar = document.getElementById('avatar');
   if (!avatar) return;
-  const colors = ['#ff3b3b','#ffb84d','#f9ff5e','#5eff8f','#5ed8ff','#a15eff','#ff5ec4','var(--accent)','var(--accent-2)'];
+  const colors = ['var(--accent)','var(--accent-2)','#f2f3f6','#34d399','#38bdf8'];
 
   function burst(x, y){
     const count = 32;
