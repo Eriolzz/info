@@ -6,8 +6,8 @@
 <title>ThanhAnn — profile</title>
 
 <!-- Favicon & mobile browser theme color -->
-<link rel="icon" type="image/jpeg" href="https://files.catbox.moe/0iyd0r.jpg">
-<link rel="apple-touch-icon" href="https://files.catbox.moe/0iyd0r.jpg">
+<link rel="icon" type="image/jpeg" href="https://files.catbox.moe/y1mbdh.jpg">
+<link rel="apple-touch-icon" href="https://files.catbox.moe/y1mbdh.jpg">
 <meta name="theme-color" content="#0b0d12">
 
 <!-- Open Graph (Discord / Facebook / Zalo link preview) -->
@@ -32,7 +32,7 @@
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
   import {
-    getFirestore, doc, setDoc, getDocs, collection, query, orderBy, limit, addDoc
+    getFirestore, doc, setDoc, getDoc, getDocs, collection, query, orderBy, limit, addDoc
   } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
   const firebaseConfig = {
@@ -48,7 +48,7 @@
   const db = getFirestore(app);
 
   // Expose ra global để phần script chính (non-module) dùng được
-  window.__fb = { db, doc, setDoc, getDocs, collection, query, orderBy, limit, addDoc };
+  window.__fb = { db, doc, setDoc, getDoc, getDocs, collection, query, orderBy, limit, addDoc };
 </script>
 
 <style>
@@ -228,34 +228,39 @@
   }
   .nav-inner{
     max-width:720px; margin:0 auto;
-    display:flex; align-items:center; gap:16px;
-    padding:13px 20px;
+    display:flex; align-items:center; gap:14px;
+    padding:9px 20px;
   }
   .nav-brand{
-    font-weight:800; font-size:14.5px; letter-spacing:-.02em;
+    font-weight:800; font-size:13.5px; letter-spacing:-.02em;
     color:var(--text-hi); text-decoration:none; flex-shrink:0;
+    padding-right:14px;
+    border-right:1px solid var(--panel-border);
   }
   .nav-links{
-    display:flex; gap:18px;
+    display:flex; gap:2px;
     overflow-x:auto; flex:1;
     scrollbar-width:none;
   }
   .nav-links::-webkit-scrollbar{ display:none; }
   .nav-links a{
     white-space:nowrap;
-    font-size:12.5px; font-weight:500;
+    font-size:11.5px; font-weight:600;
     color:var(--text-mid); text-decoration:none;
-    transition:color .2s ease;
+    padding:5px 10px;
+    border-radius:6px;
+    transition:color .2s ease, background .2s ease;
   }
-  .nav-links a:hover{ color:var(--text-hi); }
-  .nav-utils{ display:flex; gap:6px; position:relative; flex-shrink:0; }
+  .nav-links a:hover{ color:var(--text-hi); background:rgba(255,255,255,.05); }
+  .nav-links a.active{ color:var(--accent); background:rgba(var(--accent-rgb),.12); }
+  .nav-utils{ display:flex; gap:6px; position:relative; flex-shrink:0; padding-left:6px; }
 
   /* ---- section rhythm ---- */
   .section{
     padding:34px 0 6px;
     border-top:1px solid var(--panel-border);
   }
-  .hero-section{ padding-top:32px; border-top:none; text-align:left; }
+  .hero-section{ padding-top:60px; border-top:none; text-align:left; }
   .profile-bar{
     display:flex;
     align-items:center;
@@ -268,6 +273,25 @@
   }
   .profile-bar-text{ display:flex; flex-direction:column; gap:3px; min-width:0; }
   .profile-status{ font-size:12.5px; color:var(--text-mid); }
+  .profile-status::before{
+    content:'●';
+    color:#34d399;
+    font-size:8px;
+    margin-right:5px;
+    vertical-align:middle;
+  }
+  .profile-role{
+    font-size:12.5px; font-weight:600;
+    color:var(--accent-2);
+  }
+  .profile-bar-text .typing-line{ margin-top:0; font-size:12px; }
+  .profile-tags{
+    display:flex; align-items:center; gap:7px;
+    font-size:11.5px; color:var(--text-low);
+    margin:0 0 16px;
+  }
+  .profile-tags .profile-tag{ color:var(--text-mid); }
+  .profile-tag-dot{ opacity:.5; font-size:9px; }
   .section-head{ margin-bottom:14px; }
   .section-eyebrow{
     font-size:10px; font-weight:700; text-transform:uppercase;
@@ -305,11 +329,16 @@
   /* ---- snake game ---- */
   .snake-panel{ text-align:center; }
   .snake-hud{
-    display:flex; justify-content:center; gap:18px;
-    font-size:12.5px; color:var(--text-mid);
-    margin-bottom:12px;
+    display:flex; justify-content:center; gap:28px;
+    margin-bottom:14px;
   }
-  .snake-hud b{ color:var(--text-hi); font-weight:700; }
+  .snake-hud-item{
+    display:flex; flex-direction:column; align-items:center; gap:3px;
+    font-size:11px; color:var(--text-low);
+  }
+  .snake-hud-item b{ color:var(--text-hi); font-weight:800; font-size:16px; }
+  .snake-game-actions{ margin-top:10px; }
+  .snake-action-btn{ width:auto !important; padding:8px 20px !important; margin-top:0 !important; }
   .snake-board-wrap{
     position:relative;
     width:100%;
@@ -383,6 +412,66 @@
     .fortune-card.flip .fortune-text, .fortune-card.flip .fortune-icon{ animation:none; }
   }
 
+  /* ---- info card ---- */
+  .info-panel{ text-align:left; }
+  .greeting-text{
+    font-size:15px; font-weight:700;
+    color:var(--text-hi);
+    margin-bottom:4px;
+    min-height:20px;
+  }
+
+  /* ---- activity progress ---- */
+  .activity-row{ margin-bottom:16px; }
+  .activity-row:last-child{ margin-bottom:0; }
+  .activity-row-head{
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-size:12px; color:var(--text-mid);
+    margin-bottom:7px;
+  }
+  .activity-row-val{ font-size:11.5px; color:var(--text-low); }
+  .activity-row-val b{ color:var(--text-hi); font-weight:700; }
+  .activity-bar{
+    height:7px; border-radius:99px;
+    background:rgba(255,255,255,.06);
+    overflow:hidden;
+  }
+  .activity-bar-fill{
+    height:100%; width:0%;
+    border-radius:99px;
+    background:linear-gradient(90deg, var(--accent), var(--accent-2));
+    transition:width .6s ease;
+  }
+
+  /* ---- achievements 2-col grid ---- */
+  .achieve-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:8px;
+  }
+  @media (max-width:520px){
+    .achieve-grid{ grid-template-columns:1fr; }
+  }
+
+  /* ---- leaderboard tabs ---- */
+  .lb-tabs{ display:flex; gap:8px; margin-bottom:12px; }
+  .lb-tab{
+    flex:1;
+    padding:9px 12px;
+    border-radius:9px;
+    border:1px solid var(--panel-border);
+    background:rgba(255,255,255,.03);
+    color:var(--text-mid);
+    font-size:12px; font-weight:600;
+    cursor:pointer;
+    transition:all .2s ease;
+  }
+  .lb-tab.active{
+    background:rgba(var(--accent-rgb),.15);
+    border-color:rgba(var(--accent-rgb),.4);
+    color:var(--accent);
+  }
+
   /* ---- generic content panel (achievements / leaderboard / guestbook) ---- */
   .section-panel{
     background:var(--panel);
@@ -399,6 +488,10 @@
     display:flex; align-items:center; justify-content:space-between;
     font-size:11px; letter-spacing:.6px; color:var(--text-low);
     border-top:1px solid var(--panel-border);
+  }
+  .weather-widget{
+    display:flex; align-items:center; gap:5px;
+    color:var(--text-mid);
   }
 
   @media (max-width:640px){
@@ -421,7 +514,7 @@
     gap:6px;
   }
   .icon-btn{
-    width:34px;height:34px;
+    width:30px;height:30px;
     border-radius:8px;
     border:1px solid var(--panel-border);
     background:rgba(255,255,255,0.04);
@@ -918,6 +1011,10 @@
     display:flex; align-items:center; gap:10px;
     font-size:12px; color:var(--text-low);
     opacity:.55;
+    background:rgba(255,255,255,0.02);
+    border:1px solid var(--panel-border);
+    border-radius:10px;
+    padding:9px 10px;
     transition:opacity .2s ease;
   }
   .achieve-item.unlocked{ opacity:1; color:var(--text-hi); }
@@ -929,9 +1026,30 @@
     font-size:13px;
   }
   .achieve-item.unlocked .ai-icon{ background:rgba(var(--accent-rgb),.2); }
-  .achieve-item .ai-text{ line-height:1.35; }
+  .achieve-item .ai-text{ line-height:1.35; flex:1; min-width:0; }
   .achieve-item .ai-title{ font-weight:600; font-size:12px; }
   .achieve-item .ai-desc{ font-size:10.5px; color:var(--text-low); }
+  .ai-check{
+    flex-shrink:0;
+    width:18px; height:18px;
+    border-radius:50%;
+    background:#34d399;
+    color:#06281b;
+    font-size:11px; font-weight:800;
+    display:flex; align-items:center; justify-content:center;
+  }
+  .ai-progress{ display:flex; align-items:center; gap:6px; margin-top:5px; }
+  .ai-progress-bar{
+    flex:1; height:4px; border-radius:99px;
+    background:rgba(255,255,255,.07);
+    overflow:hidden;
+  }
+  .ai-progress-fill{
+    height:100%;
+    background:rgba(var(--accent-rgb),.7);
+    border-radius:99px;
+  }
+  .ai-progress-text{ font-size:9.5px; color:var(--text-low); flex-shrink:0; }
 
   .lb-loading{ font-size:12px; color:var(--text-low); text-align:center; padding:10px 0; }
   .lb-row{
@@ -1096,7 +1214,8 @@
     <div class="nav-inner">
       <a href="#hero" class="nav-brand">ThanhAnn</a>
       <div class="nav-links">
-        <a href="#features">Tính năng</a>
+        <a href="#info">Hồ sơ</a>
+        <a href="#activity">Hoạt động</a>
         <a href="#music">Đang nghe</a>
         <a href="#snake">Rắn săn mồi</a>
         <a href="#leaderboard">Xếp hạng</a>
@@ -1143,66 +1262,24 @@
           <div class="avatar-glow"></div>
           <img src="https://files.catbox.moe/y1mbdh.jpg" class="avatar" id="avatar" draggable="false" fetchpriority="high" decoding="async">
           <div class="status-dot"></div>
-          <div class="thought-bubble" id="greetingLine"></div>
         </div>
         <div class="profile-bar-text">
           <div class="username">
             <span class="led-name" id="ledName"><span class="led-letter">T</span><span class="led-letter">h</span><span class="led-letter">a</span><span class="led-letter">n</span><span class="led-letter">h</span><span class="led-letter">A</span><span class="led-letter">n</span><span class="led-letter">n</span></span>
             <svg class="verified" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.39 1.94 3.06-.39 1.04 2.9 2.74 1.49-.62 3.05L22 14l-1.39 2.78.62 3.05-2.74 1.49-1.04 2.9-3.06-.39L12 26l-2.39-2.1L6.55 25.71 5.51 22.81 2.77 21.32 3.39 18.27 2 15.5l1.39-2.78-.62-3.05 2.74-1.49 1.04-2.9 3.06.39z"></path></svg>
           </div>
+          <div class="profile-role">Web Developer</div>
+          <div class="typing-line"><span id="typingText"></span><span class="cursor" id="typingCursor">&nbsp;</span></div>
           <div class="profile-status" id="statusText">online — 24/7</div>
         </div>
       </div>
 
-      <!-- everything else, moved below the bar -->
-      <div class="identity">
-        <div class="eyebrow">Hồ sơ cá nhân</div>
-        <div class="typing-line"><span id="typingText"></span><span class="cursor" id="typingCursor">&nbsp;</span></div>
-        <p class="bio">hehe</p>
-
-        <div class="meta-row">
-          <div class="meta-chip">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
-            <span>Yên Phú, Phú Thọ</span>
-          </div>
-          <div class="meta-chip">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v5l3.5 2"></path></svg>
-            <span id="clockText">--:--:--</span>
-          </div>
-          <div class="meta-chip" id="streakChip" title="Số ngày ghé thăm liên tiếp">
-            <span>🔥 <span id="streakCount">0</span></span>
-          </div>
-        </div>
-      </div>
-
-      <div class="divider"><span class="divider-mark"></span></div>
-
-      <!-- social buttons -->
-      <div class="socials">
-        <a class="social-btn" data-brand="discord" href="https://discord.com/users/792898613503983646" title="Discord">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.369A19.79 19.79 0 0 0 16.558 3c-.2.357-.43.84-.59 1.225a18.27 18.27 0 0 0-5.93 0A8.69 8.69 0 0 0 9.45 3 19.79 19.79 0 0 0 5.69 4.369a31.6 31.6 0 0 0-1.8 15.8 19.78 19.78 0 0 0 5.92 3.02c.46-.63.87-1.3 1.2-2.02-.64-.2-1.25-.46-1.83-.77.15-.1.3-.21.44-.32a14.02 14.02 0 0 0 12.1 0c.14.11.29.22.44.32-.58.31-1.19.57-1.83.77.33.72.74 1.39 1.2 2.02 2.41-.61 4.62-1.6 5.92-3.02.52-5.17-.88-9.66-3.74-13.66zM8.68 14.81c-1.23 0-2.25-1.12-2.25-2.5s1-2.5 2.25-2.5c1.24 0 2.28 1.12 2.25 2.5 0 1.38-1.02 2.5-2.25 2.5zm6.64 0c-1.23 0-2.25-1.12-2.25-2.5s1.02-2.5 2.25-2.5c1.24 0 2.28 1.12 2.25 2.5 0 1.38-1.01 2.5-2.25 2.5z"></path></svg>
-        </a>
-        <a class="social-btn" data-brand="github" href="https://github.com/Eriolzz" title="GitHub">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.17c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.48-1.34-5.48-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23.96-.27 1.98-.4 3-.41 1.02.01 2.04.14 3 .41 2.29-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.82 5.63-5.5 5.92.43.37.82 1.1.82 2.22v 3.29c0 .32.21.7.83.58A12 12 0 0 0 12 0z"></path></svg>
-        </a>
-        <a class="social-btn" data-brand="zalo" href="#" title="Zalo">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.49 10.2722v-.4496h1.3467v6.3218h-.7704a.576.576 0 01-.5763-.5729l-.0006.0005a3.273 3.273 0 01-1.9372.6321c-1.8138 0-3.2844-1.4697-3.2844-3.2823 0-1.8125 1.4706-3.2822 3.2844-3.2822a3.273 3.273 0 011.9372.6321l.0006.0005zM6.9188 7.7896v.205c0 .3823-.051.6944-.2995 1.0605l-.03.0343c-.0542.0615-.1815.206-.2421.2843L2.024 14.8h4.8948v.7682a.5764.5764 0 01-.5767.5761H0v-.3622c0-.4436.1102-.6414.2495-.8476L4.8582 9.23H.1922V7.7896h6.7266zm8.5513 8.3548a.4805.4805 0 01-.4803-.4798v-7.875h1.4416v8.3548H15.47zM20.6934 9.6C22.52 9.6 24 11.0807 24 12.9044c0 1.8252-1.4801 3.306-3.3066 3.306-1.8264 0-3.3066-1.4808-3.3066-3.306 0-1.8237 1.4802-3.3044 3.3066-3.3044zm-10.1412 5.253c1.0675 0 1.9324-.8645 1.9324-1.9312 0-1.065-.865-1.9295-1.9324-1.9295s-1.9324.8644-1.9324 1.9295c0 1.0667.865 1.9312 1.9324 1.9312zm10.1412-.0033c1.0737 0 1.945-.8707 1.945-1.9453 0-1.073-.8713-1.9436-1.945-1.9436-1.0753 0-1.945.8706-1.945 1.9436 0 1.0746.8697 1.9453 1.945 1.9453z"/></svg>
-        </a>
-      <a class="social-btn" data-brand="spotify" href="https://open.spotify.com/user/31zf5fxifykppyawkfksull6ynrq" title="Spotify">
-    <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.65 14.4c-.2.3-.6.4-.9.2-2.4-1.47-5.43-1.8-9-.99-.34.08-.68-.13-.76-.47-.08-.34.13-.68.47-.76 3.9-.89 7.25-.51 9.94 1.13.3.18.4.58.25.89zm1.24-2.76c-.24.38-.75.5-1.13.26-2.75-1.69-6.94-2.18-10.19-1.19-.42.13-.86-.11-.99-.52-.13-.42.11-.86.52-.99 3.72-1.13 8.34-.58 11.52 1.36.39.24.51.75.27 1.08zm.11-2.87C14.85 8.88 9.61 8.7 6.37 9.67c-.5.15-1.03-.13-1.18-.63-.15-.5.13-1.03.63-1.18 3.73-1.13 9.93-.91 13.84 1.37.46.27.62.86.35 1.32-.27.46-.87.62-1.01.22z"/></svg>
-      </a>
-        <a class="social-btn" data-brand="facebook" href="https://www.facebook.com/share/1JNWxJNGPX/" title="Facebook">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.84c0-2.51 1.49-3.9 3.77-3.9 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.91h-2.34v7.03C18.34 21.21 22 17.1 22 12.06z"></path></svg>
-        </a>
-      </div>
-    </section>
-
-    <!-- ================= FEATURES ================= -->
-    <section class="section" id="features">
-      <div class="section-head">
-        <div class="section-eyebrow">Hoạt động</div>
-        <div class="section-title">Tính năng &amp; thống kê</div>
-        <p class="section-desc">Bắt ngôi sao xuất hiện ngẫu nhiên trên trang để ghi điểm, giữ streak ghé thăm mỗi ngày, và mở khóa thành tựu ẩn.</p>
+      <div class="profile-tags">
+        <span class="profile-tag">Discord</span>
+        <span class="profile-tag-dot">•</span>
+        <span class="profile-tag">Frontend</span>
+        <span class="profile-tag-dot">•</span>
+        <span class="profile-tag">Genshin</span>
       </div>
 
       <div class="feature-grid">
@@ -1224,10 +1301,94 @@
           <div class="feature-card-stat" id="streakCountFeature">0</div>
         </div>
       </div>
+    </section>
 
+    <!-- ================= INFO CARD ================= -->
+    <section class="section" id="info">
+      <div class="section-panel info-panel">
+        <div class="settings-label">👤 Hồ sơ cá nhân</div>
+        <div class="greeting-text" id="greetingLine"></div>
+        <p class="bio">hehe</p>
+
+        <div class="meta-row">
+          <div class="meta-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg>
+            <span>Yên Phú, Phú Thọ</span>
+          </div>
+          <div class="meta-chip">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><path d="M12 7v5l3.5 2"></path></svg>
+            <span id="clockText">--:--:--</span>
+          </div>
+          <div class="meta-chip" id="streakChip" title="Số ngày ghé thăm liên tiếp">
+            <span>🔥 <span id="streakCount">0</span></span>
+          </div>
+          <div class="meta-chip weather-chip" id="weatherWidget" style="display:none;"></div>
+        </div>
+
+        <div class="divider"><span class="divider-mark"></span></div>
+
+        <!-- social buttons -->
+        <div class="socials">
+          <a class="social-btn" data-brand="discord" href="https://discord.com/users/792898613503983646" title="Discord">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.317 4.369A19.79 19.79 0 0 0 16.558 3c-.2.357-.43.84-.59 1.225a18.27 18.27 0 0 0-5.93 0A8.69 8.69 0 0 0 9.45 3 19.79 19.79 0 0 0 5.69 4.369a31.6 31.6 0 0 0-1.8 15.8 19.78 19.78 0 0 0 5.92 3.02c.46-.63.87-1.3 1.2-2.02-.64-.2-1.25-.46-1.83-.77.15-.1.3-.21.44-.32a14.02 14.02 0 0 0 12.1 0c.14.11.29.22.44.32-.58.31-1.19.57-1.83.77.33.72.74 1.39 1.2 2.02 2.41-.61 4.62-1.6 5.92-3.02.52-5.17-.88-9.66-3.74-13.66zM8.68 14.81c-1.23 0-2.25-1.12-2.25-2.5s1-2.5 2.25-2.5c1.24 0 2.28 1.12 2.25 2.5 0 1.38-1.02 2.5-2.25 2.5zm6.64 0c-1.23 0-2.25-1.12-2.25-2.5s1.02-2.5 2.25-2.5c1.24 0 2.28 1.12 2.25 2.5 0 1.38-1.01 2.5-2.25 2.5z"></path></svg>
+          </a>
+          <a class="social-btn" data-brand="github" href="https://github.com/Eriolzz" title="GitHub">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0a12 12 0 0 0-3.79 23.4c.6.11.82-.26.82-.58v-2.17c-3.34.72-4.04-1.61-4.04-1.61-.55-1.39-1.34-1.76-1.34-1.76-1.09-.75.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.8 1.3 3.49 1 .1-.78.42-1.31.76-1.61-2.67-.3-5.48-1.34-5.48-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1.01-.32 3.3 1.23.96-.27 1.98-.4 3-.41 1.02.01 2.04.14 3 .41 2.29-1.55 3.29-1.23 3.29-1.23.66 1.66.24 2.88.12 3.18.77.84 1.24 1.91 1.24 3.22 0 4.61-2.82 5.63-5.5 5.92.43.37.82 1.1.82 2.22v 3.29c0 .32.21.7.83.58A12 12 0 0 0 12 0z"></path></svg>
+          </a>
+          <a class="social-btn" data-brand="zalo" href="https://zalo.me/0971231041" title="Zalo">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12.49 10.2722v-.4496h1.3467v6.3218h-.7704a.576.576 0 01-.5763-.5729l-.0006.0005a3.273 3.273 0 01-1.9372.6321c-1.8138 0-3.2844-1.4697-3.2844-3.2823 0-1.8125 1.4706-3.2822 3.2844-3.2822a3.273 3.273 0 011.9372.6321l.0006.0005zM6.9188 7.7896v.205c0 .3823-.051.6944-.2995 1.0605l-.03.0343c-.0542.0615-.1815.206-.2421.2843L2.024 14.8h4.8948v.7682a.5764.5764 0 01-.5767.5761H0v-.3622c0-.4436.1102-.6414.2495-.8476L4.8582 9.23H.1922V7.7896h6.7266zm8.5513 8.3548a.4805.4805 0 01-.4803-.4798v-7.875h1.4416v8.3548H15.47zM20.6934 9.6C22.52 9.6 24 11.0807 24 12.9044c0 1.8252-1.4801 3.306-3.3066 3.306-1.8264 0-3.3066-1.4808-3.3066-3.306 0-1.8237 1.4802-3.3044 3.3066-3.3044zm-10.1412 5.253c1.0675 0 1.9324-.8645 1.9324-1.9312 0-1.065-.865-1.9295-1.9324-1.9295s-1.9324.8644-1.9324 1.9295c0 1.0667.865 1.9312 1.9324 1.9312zm10.1412-.0033c1.0737 0 1.945-.8707 1.945-1.9453 0-1.073-.8713-1.9436-1.945-1.9436-1.0753 0-1.945.8706-1.945 1.9436 0 1.0746.8697 1.9453 1.945 1.9453z"/></svg>
+          </a>
+          <a class="social-btn" data-brand="spotify" href="https://open.spotify.com/user/31zf5fxifykppyawkfksull6ynrq" title="Spotify">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.65 14.4c-.2.3-.6.4-.9.2-2.4-1.47-5.43-1.8-9-.99-.34.08-.68-.13-.76-.47-.08-.34.13-.68.47-.76 3.9-.89 7.25-.51 9.94 1.13.3.18.4.58.25.89zm1.24-2.76c-.24.38-.75.5-1.13.26-2.75-1.69-6.94-2.18-10.19-1.19-.42.13-.86-.11-.99-.52-.13-.42.11-.86.52-.99 3.72-1.13 8.34-.58 11.52 1.36.39.24.51.75.27 1.08zm.11-2.87C14.85 8.88 9.61 8.7 6.37 9.67c-.5.15-1.03-.13-1.18-.63-.15-.5.13-1.03.63-1.18 3.73-1.13 9.93-.91 13.84 1.37.46.27.62.86.35 1.32-.27.46-.87.62-1.01.22z"/></svg>
+          </a>
+          <a class="social-btn" data-brand="facebook" href="https://www.facebook.com/share/1JNWxJNGPX/" title="Facebook">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M22 12.06C22 6.5 17.52 2 12 2S2 6.5 2 12.06c0 5 3.66 9.15 8.44 9.94v-7.03H7.9v-2.91h2.54V9.84c0-2.51 1.49-3.9 3.77-3.9 1.1 0 2.24.2 2.24.2v2.46h-1.26c-1.24 0-1.63.77-1.63 1.56v1.88h2.78l-.44 2.91h-2.34v7.03C18.34 21.21 22 17.1 22 12.06z"></path></svg>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ACTIVITY ================= -->
+    <section class="section" id="activity">
+      <div class="section-head">
+        <div class="section-eyebrow">Thống kê</div>
+        <div class="section-title">📊 Hoạt động</div>
+        <p class="section-desc">Thống kê tổng quan hoạt động của bạn trên trang.</p>
+      </div>
+      <div class="section-panel">
+        <div class="activity-row">
+          <div class="activity-row-head">
+            <span>⭐ Bắt ngôi sao xuất hiện ngẫu nhiên</span>
+            <span class="activity-row-val"><b id="actStarVal">0</b> / <span id="actStarMax">500</span></span>
+          </div>
+          <div class="activity-bar"><div class="activity-bar-fill" id="actStarBar"></div></div>
+        </div>
+        <div class="activity-row">
+          <div class="activity-row-head">
+            <span>🐍 Snake game high score</span>
+            <span class="activity-row-val"><b id="actSnakeVal">0</b> / <span id="actSnakeMax">100</span></span>
+          </div>
+          <div class="activity-bar"><div class="activity-bar-fill" id="actSnakeBar"></div></div>
+        </div>
+        <div class="activity-row">
+          <div class="activity-row-head">
+            <span>🎧 Thời gian nghe nhạc</span>
+            <span class="activity-row-val"><b id="actMusicVal">0</b> / <span id="actMusicMax">300</span> phút</span>
+          </div>
+          <div class="activity-bar"><div class="activity-bar-fill" id="actMusicBar"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ACHIEVEMENTS ================= -->
+    <section class="section" id="achievements">
+      <div class="section-head">
+        <div class="section-eyebrow">Cột mốc</div>
+        <div class="section-title">🏆 Thành tựu</div>
+      </div>
       <div class="section-panel" id="achievePanel">
         <div class="settings-label">Thành tựu (<span id="achieveCount">0</span>/<span id="achieveTotal">6</span>)</div>
-        <div class="achieve-list" id="achieveList"></div>
+        <div class="achieve-list achieve-grid" id="achieveList"></div>
       </div>
     </section>
 
@@ -1289,8 +1450,8 @@
       </div>
       <div class="section-panel snake-panel">
         <div class="snake-hud">
-          <div class="snake-hud-item">Điểm: <b id="snakeScore">0</b></div>
-          <div class="snake-hud-item">Kỷ lục: <b id="snakeBest">0</b></div>
+          <div class="snake-hud-item"><span>Điểm hiện tại</span><b id="snakeScore">0</b></div>
+          <div class="snake-hud-item"><span>Kỷ lục cá nhân</span><b id="snakeBest">0</b></div>
         </div>
         <div class="snake-board-wrap" id="snakeBoardWrap">
           <canvas id="snakeCanvas" width="280" height="280"></canvas>
@@ -1298,6 +1459,9 @@
             <div class="snake-overlay-text" id="snakeOverlayText">Bấm để bắt đầu chơi</div>
             <button class="lb-rename-btn" id="snakeStartBtn">▶️ Chơi</button>
           </div>
+        </div>
+        <div class="snake-game-actions">
+          <button class="lb-rename-btn snake-action-btn" id="snakePauseBtn">⏸️ Tạm dừng</button>
         </div>
         <div class="snake-dpad">
           <button class="snake-dbtn" id="snakeUp" aria-label="Lên">
@@ -1320,21 +1484,17 @@
     <section class="section" id="leaderboard">
       <div class="section-head">
         <div class="section-eyebrow">Thi đua</div>
-        <div class="section-title">⭐ Top bắt sao</div>
+        <div class="section-title">🏆 Xếp hạng</div>
       </div>
-      <div class="section-panel" id="leaderboardPanel">
+      <div class="lb-tabs">
+        <button class="lb-tab active" id="lbTabStars" data-target="lbPanelStars">⭐ Bắt sao</button>
+        <button class="lb-tab" id="lbTabSnake" data-target="lbPanelSnake">🐍 Rắn săn mồi</button>
+      </div>
+      <div class="section-panel" id="lbPanelStars">
         <div class="achieve-list" id="leaderboardList"><div class="lb-loading">Đang tải...</div></div>
         <button class="lb-rename-btn" id="lbRenameBtn">✏️ Đổi tên hiển thị</button>
       </div>
-    </section>
-
-    <!-- ================= SNAKE LEADERBOARD ================= -->
-    <section class="section" id="snake-leaderboard">
-      <div class="section-head">
-        <div class="section-eyebrow">Thi đua</div>
-        <div class="section-title">🐍 Top rắn săn mồi</div>
-      </div>
-      <div class="section-panel">
+      <div class="section-panel" id="lbPanelSnake" style="display:none;">
         <div class="achieve-list" id="snakeLeaderboardList"><div class="lb-loading">Đang tải...</div></div>
       </div>
     </section>
@@ -1421,6 +1581,54 @@
              social buttons, music player, sound toggle, visitor counter
    ========================================================================= */
 
+/* ---------------------------- ẢNH AVATAR + CẤU HÌNH TỪ FIRESTORE (SỬA KHÔNG CẦN CODE) ----------------------------
+   Cách đổi avatar / thêm-đổi nhạc mà KHÔNG cần sửa file này:
+   1. Vào Firebase Console → Firestore Database.
+   2. Tạo collection "config" → document id đặt là "site" (nếu chưa có).
+   3. Thêm field "avatarUrl" (string) = link ảnh mới để đổi avatar.
+   4. Thêm field "playlist" (array) = danh sách map, mỗi map có 4 field: title, artist, cover, audio
+      (giống hệt cấu trúc bên dưới) để đổi/thêm bài nhạc.
+   5. Lưu lại, tải lại trang — avatar/nhạc sẽ tự lấy theo, không cần đụng code.
+   Nếu không tạo document này (hoặc mất mạng), trang vẫn chạy bình thường với giá trị mặc định
+   bên dưới, không bị lỗi gì cả.
+
+   LƯU Ý: ảnh preview khi share link (Discord/Zalo/Facebook) là thẻ <meta og:image> tĩnh trong
+   <head> — các app đọc link preview không chạy JS nên KHÔNG đổi theo Firestore được, vẫn phải
+   sửa tay 2 dòng meta đó trong file nếu muốn đổi ảnh preview khi share.
+--------------------------------------------------------------------------- */
+let AVATAR_URL = 'https://files.catbox.moe/y1mbdh.jpg';
+
+function applyAvatarEverywhere(url){
+  const avatarImg = document.getElementById('avatar');
+  if (avatarImg) avatarImg.src = url;
+  const favicon = document.querySelector('link[rel="icon"]');
+  if (favicon) favicon.href = url;
+  const appleIcon = document.querySelector('link[rel="apple-touch-icon"]');
+  if (appleIcon) appleIcon.href = url;
+}
+applyAvatarEverywhere(AVATAR_URL); // hiện ngay giá trị mặc định, không đợi mạng
+
+async function loadSiteConfig(){
+  // đợi tối đa ~3s cho module Firebase sẵn sàng (nó load async ở đầu trang)
+  for (let i = 0; i < 30 && !window.__fb; i++) await new Promise(r => setTimeout(r, 100));
+  if (!window.__fb) return null;
+  try{
+    const { db, doc, getDoc } = window.__fb;
+    const snap = await getDoc(doc(db, 'config', 'site'));
+    if (snap.exists()) return snap.data();
+  }catch(err){ console.warn('loadSiteConfig failed:', err); }
+  return null;
+}
+
+// Promise dùng chung: avatar và trình phát nhạc cùng đợi 1 lần fetch config duy nhất
+window.__siteConfigPromise = loadSiteConfig().then(cfg => {
+  if (cfg && cfg.avatarUrl){
+    AVATAR_URL = cfg.avatarUrl;
+    applyAvatarEverywhere(AVATAR_URL);
+  }
+  return cfg;
+});
+
 // Global icon constants - accessible throughout script
 const ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
 const ICON_PAUSE = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
@@ -1472,6 +1680,23 @@ function getUnlocked(){
   try{ return JSON.parse(localStorage.getItem(ACHIEVE_KEY) || '[]'); }
   catch(e){ return []; }
 }
+function achievementProgress(id){
+  // Trả về {cur, max} cho các thành tựu có thể đo tiến độ, hoặc null nếu không (dạng nhị phân)
+  if (id === 'streak'){
+    const cur = parseInt(localStorage.getItem('visit-streak') || '0', 10);
+    return { cur: Math.min(cur, 3), max: 3 };
+  }
+  if (id === 'stars'){
+    const cur = parseInt(localStorage.getItem('game-star-score') || '0', 10);
+    return { cur: Math.min(cur, 5), max: 5 };
+  }
+  if (id === 'snake'){
+    const cur = parseInt(localStorage.getItem('snake-best') || '0', 10);
+    return { cur: Math.min(cur, 5), max: 5 };
+  }
+  return null;
+}
+
 function renderAchieveList(){
   const list = document.getElementById('achieveList');
   const countEl = document.getElementById('achieveCount');
@@ -1482,12 +1707,18 @@ function renderAchieveList(){
   if (totalEl) totalEl.textContent = Object.keys(ACHIEVEMENTS).length;
   list.innerHTML = Object.entries(ACHIEVEMENTS).map(([id, a]) => {
     const done = unlocked.includes(id);
+    const prog = done ? null : achievementProgress(id);
+    const progHtml = prog
+      ? `<div class="ai-progress"><div class="ai-progress-bar"><div class="ai-progress-fill" style="width:${(prog.cur/prog.max*100)}%"></div></div><span class="ai-progress-text">${prog.cur}/${prog.max}</span></div>`
+      : '';
     return `<div class="achieve-item ${done ? 'unlocked':''}">
       <div class="ai-icon">${done ? a.icon : '🔒'}</div>
       <div class="ai-text">
         <div class="ai-title">${a.title}</div>
         <div class="ai-desc">${done ? a.desc : '???'}</div>
+        ${progHtml}
       </div>
+      ${done ? '<div class="ai-check">✓</div>' : ''}
     </div>`;
   }).join('');
 }
@@ -1962,7 +2193,96 @@ async function loadSnakeLeaderboard(){
   }
 }
 window.loadSnakeLeaderboard = loadSnakeLeaderboard;
+/* ---------------------------- LEADERBOARD TABS ---------------------------- */
+(function lbTabs(){
+  const tabStars = document.getElementById('lbTabStars');
+  const tabSnake = document.getElementById('lbTabSnake');
+  const panelStars = document.getElementById('lbPanelStars');
+  const panelSnake = document.getElementById('lbPanelSnake');
+  if (!tabStars || !tabSnake) return;
+
+  tabStars.addEventListener('click', () => {
+    tabStars.classList.add('active'); tabSnake.classList.remove('active');
+    panelStars.style.display = ''; panelSnake.style.display = 'none';
+  });
+  tabSnake.addEventListener('click', () => {
+    tabSnake.classList.add('active'); tabStars.classList.remove('active');
+    panelSnake.style.display = ''; panelStars.style.display = 'none';
+  });
+})();
+
 loadSnakeLeaderboard();
+
+/* ---------------------------- WEATHER WIDGET ---------------------------- */
+(function weatherWidget(){
+  const el = document.getElementById('weatherWidget');
+  if (!el) return;
+
+  // Tọa độ xấp xỉ khu vực Phú Thọ, Việt Nam
+  const LAT = 21.4, LON = 105.2;
+  const CACHE_KEY = 'weather-cache';
+  const CACHE_MS = 30 * 60 * 1000; // cache 30 phút, tránh gọi API liên tục
+
+  function iconFor(code){
+    if (code === 0) return '☀️';
+    if (code === 1 || code === 2) return '🌤️';
+    if (code === 3) return '☁️';
+    if (code === 45 || code === 48) return '🌫️';
+    if ([51,53,55,56,57,61,63,65,66,67,80,81,82].includes(code)) return '🌧️';
+    if ([71,73,75,77,85,86].includes(code)) return '🌨️';
+    if ([95,96,99].includes(code)) return '⛈️';
+    return '🌡️';
+  }
+
+  function render(temp, code){
+    el.textContent = `${iconFor(code)} ${Math.round(temp)}°C`;
+    el.style.display = '';
+  }
+
+  async function loadWeather(){
+    try{
+      const cached = JSON.parse(localStorage.getItem(CACHE_KEY) || 'null');
+      if (cached && (Date.now() - cached.ts) < CACHE_MS){
+        render(cached.temp, cached.code);
+        return;
+      }
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${LAT}&longitude=${LON}&current=temperature_2m,weather_code&timezone=Asia%2FBangkok`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('weather http ' + res.status);
+      const data = await res.json();
+      const temp = data.current.temperature_2m;
+      const code = data.current.weather_code;
+      localStorage.setItem(CACHE_KEY, JSON.stringify({ temp, code, ts: Date.now() }));
+      render(temp, code);
+    }catch(err){
+      console.warn('weatherWidget failed:', err);
+      el.style.display = 'none'; // lấy thất bại thì ẩn đi, không hiện số liệu giả
+    }
+  }
+
+  loadWeather();
+})();
+
+/* ---------------------------- NAV: SCROLLSPY ---------------------------- */
+(function navScrollUX(){
+  const navLinks = Array.from(document.querySelectorAll('.nav-links a'));
+  const sections = navLinks
+    .map(a => document.querySelector(a.getAttribute('href')))
+    .filter(Boolean);
+
+  if (sections.length && 'IntersectionObserver' in window){
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const id = '#' + entry.target.id;
+        navLinks.forEach(a => a.classList.toggle('active', a.getAttribute('href') === id));
+        const activeLink = navLinks.find(a => a.getAttribute('href') === id);
+        if (activeLink) activeLink.scrollIntoView({ inline:'center', block:'nearest', behavior:'smooth' });
+      });
+    }, { rootMargin: '-45% 0px -50% 0px', threshold: 0 });
+    sections.forEach(s => io.observe(s));
+  }
+})();
 
 (function snakeGame(){
   const canvas = document.getElementById('snakeCanvas');
@@ -2085,7 +2405,26 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
     state = 'playing';
     window.__snakeActive = true;
     overlay.classList.add('hidden');
+    pauseBtn.textContent = '⏸️ Tạm dừng';
     draw();
+    runLoop();
+  }
+
+  function pauseGame(){
+    if (state !== 'playing') return;
+    state = 'paused';
+    window.__snakeActive = false;
+    clearTimeout(loopId);
+    overlayText.textContent = '⏸️ Đã tạm dừng';
+    startBtn.textContent = '▶️ Tiếp tục';
+    overlay.classList.remove('hidden');
+  }
+
+  function resumeGame(){
+    if (state !== 'paused') return;
+    state = 'playing';
+    window.__snakeActive = true;
+    overlay.classList.add('hidden');
     runLoop();
   }
 
@@ -2099,6 +2438,7 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
       localStorage.setItem('snake-best', score);
       bestEl.textContent = score;
     }
+    if (window.updateActivityBars) window.updateActivityBars();
     submitSnakeScore(score).then(loadSnakeLeaderboard);
 
     overlayText.innerHTML = `Game Over 🐍<br>Điểm của bạn: <b>${score}</b>`;
@@ -2112,7 +2452,15 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
   reset();
   draw();
 
-  startBtn.addEventListener('click', startGame);
+  const pauseBtn = document.getElementById('snakePauseBtn');
+  startBtn.addEventListener('click', () => {
+    if (state === 'paused') resumeGame();
+    else startGame();
+  });
+  if (pauseBtn) pauseBtn.addEventListener('click', () => {
+    if (state === 'playing'){ pauseGame(); pauseBtn.textContent = '▶️ Tiếp tục'; }
+    else if (state === 'paused'){ resumeGame(); pauseBtn.textContent = '⏸️ Tạm dừng'; }
+  });
 
   // keyboard
   document.addEventListener('keydown', (e) => {
@@ -2153,8 +2501,8 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
 
 (function musicPlayer(){
 
-  /* ── PLAYLIST — chỉ cần sửa array này để thêm/đổi bài ── */
-  const playlist = [
+  /* ── PLAYLIST MẶC ĐỊNH — dùng khi chưa cấu hình "playlist" trên Firestore ── */
+  let playlist = [
      {
       title:" NOT THE ONE",
       artist:"remix",
@@ -2196,36 +2544,6 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
       artist:"Hngle ft/Bảo Anh",
       cover:'https://files.catbox.moe/c6cmfg.jpg',
       audio:'https://files.catbox.moe/6k7pbh.mp3'
-    },
-    {
-      title:"Thăm Cố Tri - Thiển Ảnh A | 探故知 - 浅影阿 ",
-      artist:"「Vietsub | Pinyin」",
-      cover:'https://files.catbox.moe/2jhl63.jpg',
-      audio:'https://files.catbox.moe/qd4le1.mp3'
-    },
-    {
-      title:' NGU HỀ THÁN| 虞兮叹 - 闻人听書 ',
-      artist:'[PINYIN & VIETSUB]',
-      cover:'https://files.catbox.moe/5swzz7.jpg',
-      audio:'https://files.catbox.moe/shlw1y.mp3'
-    },
-    {
-      title:'GIÓ NỔI RỒI| 起风了 - 周深 ',
-      artist:'[PINYIN & VIETSUB]',
-      cover:'https://files.catbox.moe/0yz2s8.jpg',
-      audio:'https://files.catbox.moe/r3jh3o.mp3'
-    },
-    {
-      title:' ',
-      artist:'',
-      cover:'',
-      audio:''
-    },
-    {
-      title:' ',
-      artist:'',
-      cover:'',
-      audio:''
     }
   ];
 
@@ -2320,6 +2638,7 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
     const durSpan = document.getElementById('mc-dur-' + currentIdx);
     if (durSpan) durSpan.textContent = fmt(audio.duration);
   });
+  let __lastAudioTime = null;
   audio.addEventListener('timeupdate', () => {
     if (!isSeeking && audio.duration){
       progress.value = (audio.currentTime / audio.duration) * 100;
@@ -2327,6 +2646,16 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
       if (Math.floor(audio.currentTime) % 5 === 0)
         localStorage.setItem('mc-pos-' + currentIdx, audio.currentTime);
     }
+    // theo dõi thời gian nghe thực tế cho card "Hoạt động" (bỏ qua khi tua/seek/lặp bài)
+    if (__lastAudioTime !== null){
+      const delta = audio.currentTime - __lastAudioTime;
+      if (delta > 0 && delta < 2){
+        const totalSec = parseFloat(localStorage.getItem('music-seconds-listened') || '0') + delta;
+        localStorage.setItem('music-seconds-listened', totalSec);
+        if (window.updateActivityBars) window.updateActivityBars();
+      }
+    }
+    __lastAudioTime = audio.currentTime;
   });
   audio.addEventListener('ended', () => {
     if (isRepeat){ audio.currentTime = 0; play(); } else nextSong();
@@ -2422,6 +2751,17 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
   buildList();
   loadSong(currentIdx, false);
 
+  // Nếu có "playlist" tuỳ chỉnh trên Firestore (config/site), tự thay vào sau khi tải xong —
+  // không chặn hiển thị playlist mặc định lúc đầu, tránh trang bị đứng chờ mạng.
+  (window.__siteConfigPromise || Promise.resolve(null)).then(cfg => {
+    if (cfg && Array.isArray(cfg.playlist) && cfg.playlist.length){
+      playlist = cfg.playlist;
+      currentIdx = 0;
+      buildList();
+      loadSong(currentIdx, false);
+    }
+  });
+
 })();
 
 /* ---------------------------- SOUND TOGGLE ---------------------------- */
@@ -2465,6 +2805,31 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
     el.textContent = shown.toLocaleString();
   }, 16);
 })();
+
+/* ---------------------------- ACTIVITY BARS ---------------------------- */
+function updateActivityBars(){
+  const starVal = parseInt(localStorage.getItem('game-star-score') || '0', 10);
+  const starMax = 500;
+  const starValEl = document.getElementById('actStarVal');
+  const starBarEl = document.getElementById('actStarBar');
+  if (starValEl){ starValEl.textContent = starVal; starBarEl.style.width = Math.min(100, starVal/starMax*100) + '%'; }
+
+  const snakeVal = parseInt(localStorage.getItem('snake-best') || '0', 10);
+  const snakeMax = 100;
+  const snakeValEl = document.getElementById('actSnakeVal');
+  const snakeBarEl = document.getElementById('actSnakeBar');
+  if (snakeValEl){ snakeValEl.textContent = snakeVal; snakeBarEl.style.width = Math.min(100, snakeVal/snakeMax*100) + '%'; }
+
+  const musicSec = parseFloat(localStorage.getItem('music-seconds-listened') || '0');
+  const musicMin = Math.floor(musicSec / 60);
+  const musicMax = 300;
+  const musicValEl = document.getElementById('actMusicVal');
+  const musicBarEl = document.getElementById('actMusicBar');
+  if (musicValEl){ musicValEl.textContent = musicMin; musicBarEl.style.width = Math.min(100, musicMin/musicMax*100) + '%'; }
+}
+window.updateActivityBars = updateActivityBars;
+updateActivityBars();
+setInterval(updateActivityBars, 3000);
 
 /* ---------------------------- VISIT STREAK ---------------------------- */
 (function visitStreak(){
