@@ -2754,11 +2754,15 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
   // Nếu có "playlist" tuỳ chỉnh trên Firestore (config/site), tự thay vào sau khi tải xong —
   // không chặn hiển thị playlist mặc định lúc đầu, tránh trang bị đứng chờ mạng.
   (window.__siteConfigPromise || Promise.resolve(null)).then(cfg => {
+    console.log('[siteConfig] dữ liệu tải từ Firestore:', cfg);
     if (cfg && Array.isArray(cfg.playlist) && cfg.playlist.length){
       playlist = cfg.playlist;
       currentIdx = 0;
       buildList();
       loadSong(currentIdx, false);
+      if (window.showToast) showToast(`Đã tải playlist tuỳ chỉnh (${playlist.length} bài)`, '🎵');
+    } else if (cfg){
+      console.log('[siteConfig] không thấy field "playlist" hợp lệ trong document config/site');
     }
   });
 
