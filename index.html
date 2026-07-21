@@ -3095,8 +3095,12 @@ setInterval(updateActivityBars, 3000);
     card.addEventListener('mouseleave', () => { card.style.transform = ''; });
   });
 })();
-function onpenFlappy(){document.getElementById("gameContainer").innerHTML=`<iframe src="game/falppy-bird.html"style="with:100%;height:700px;border:none;border-radius:16px;"></iframe>`;}
-function closeFlappy(){document.getElementById("gameContainer").innerHTML="";}
+function openFlappy(){
+      document.getElementById("gameContainer").innerHTML =
+          `<iframe src="game/flappy.html"
+              style="width:100%;height:700px;border:none;border-radius:16px;"></iframe>`;
+              }
+}
 </script>
 </body>
 </html>
