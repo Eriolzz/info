@@ -1479,6 +1479,9 @@
         </div>
       </div>
     </section>
+<!-- ================= Moi================= -->
+<div id="gameContainer"></div>
+<button onclick="openFlappy()">Flappy Bird</button>
 
     <!-- ================= LEADERBOARD ================= -->
     <section class="section" id="leaderboard">
@@ -3092,6 +3095,8 @@ setInterval(updateActivityBars, 3000);
     card.addEventListener('mouseleave', () => { card.style.transform = ''; });
   });
 })();
+function onpenFlappy(){document.getElementById("gameContainer").innerHTML=`<iframe src="game/falppy-bird.html"style="with:100%;height:700px;border:none;border-radius:16px;"></iframe>`;}
+function closeFlappy(){document.getElementById("gameContainer").innerHTML="";}
 </script>
 </body>
 </html>
