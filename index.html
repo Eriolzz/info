@@ -26,6 +26,8 @@
 <!-- Fonts: a single confident modern grotesk, used with weight/tracking for hierarchy -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://files.catbox.moe" crossorigin>
+<link rel="dns-prefetch" href="https://files.catbox.moe">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
 <!-- Firebase (leaderboard đồng bộ) -->
@@ -826,9 +828,19 @@
   .mc-btn svg{width:15px;height:15px;}
   .mc-btn:hover{background:rgba(var(--accent-rgb),0.18);color:var(--accent);border-color:rgba(var(--accent-rgb),0.4);transform:scale(1.1);}
   .mc-btn.active{color:var(--accent);border-color:rgba(var(--accent-rgb),0.4);}
-  .mc-play-btn{width:46px;height:46px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border:none;border-radius:50%;color:#0a0908;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;box-shadow:0 4px 16px rgba(var(--accent-rgb),0.5);}
+  .mc-play-btn{width:46px;height:46px;background:linear-gradient(135deg,var(--accent),var(--accent-2));border:none;border-radius:50%;color:#0a0908;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .2s ease,box-shadow .2s ease;box-shadow:0 4px 16px rgba(var(--accent-rgb),0.5);position:relative;}
   .mc-play-btn svg{width:18px;height:18px;}
   .mc-play-btn:hover{transform:scale(1.08);box-shadow:0 6px 22px rgba(var(--accent-rgb),0.7);}
+  .mc-play-btn.loading::after{
+    content:'';
+    position:absolute;
+    width:52px;height:52px;
+    border-radius:50%;
+    border:2px solid transparent;
+    border-top-color:rgba(255,255,255,.8);
+    animation:mcSpin .7s linear infinite;
+  }
+  @keyframes mcSpin{ to{ transform:rotate(360deg); } }
   .mc-vol-row{display:flex;align-items:center;gap:10px;margin-bottom:14px;}
   .mc-vol-row svg{width:14px;height:14px;color:var(--text-low);flex-shrink:0;}
   .mc-vol{flex:1;height:4px;border-radius:2px;cursor:pointer;background:rgba(255,255,255,0.08);-webkit-appearance:none;appearance:none;accent-color:var(--accent);}
@@ -1572,7 +1584,7 @@
 </div>
 
 <!-- ============================= MUSIC PLAYER ============================= -->
-<audio id="mcAudio" preload="none"></audio>
+<audio id="mcAudio" preload="auto"></audio>
 
 <script>
 /* =========================================================================
@@ -2621,6 +2633,14 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
       pendingPlay = !!autoPlay;
     }
 
+    // Tải trước (ở nền, không phát) bài kế tiếp để lúc bấm "next" đỡ phải chờ
+    const nextSongData = playlist[(idx + 1) % playlist.length];
+    if (nextSongData && nextSongData.audio){
+      const prefetcher = new Audio();
+      prefetcher.preload = 'auto';
+      prefetcher.src = nextSongData.audio;
+    }
+
     listWrap.querySelectorAll('.mc-item').forEach((el, i) => {
       el.classList.toggle('active', i === idx);
       el.querySelector('.mc-item-num').textContent = i === idx ? '♪' : (i+1);
@@ -2633,8 +2653,6 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
   });
   audio.addEventListener('loadedmetadata', () => {
     durEl.textContent = fmt(audio.duration);
-    const sp = localStorage.getItem('mc-pos-' + currentIdx);
-    if (sp && parseFloat(sp) < audio.duration) audio.currentTime = parseFloat(sp);
     const durSpan = document.getElementById('mc-dur-' + currentIdx);
     if (durSpan) durSpan.textContent = fmt(audio.duration);
   });
@@ -2643,8 +2661,6 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
     if (!isSeeking && audio.duration){
       progress.value = (audio.currentTime / audio.duration) * 100;
       curEl.textContent = fmt(audio.currentTime);
-      if (Math.floor(audio.currentTime) % 5 === 0)
-        localStorage.setItem('mc-pos-' + currentIdx, audio.currentTime);
     }
     // theo dõi thời gian nghe thực tế cho card "Hoạt động" (bỏ qua khi tua/seek/lặp bài)
     if (__lastAudioTime !== null){
@@ -2664,6 +2680,10 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
     setPlayingUI(false);
     if (playlist[currentIdx].audio) titleEl.textContent = '⚠ Lỗi tải nhạc';
   });
+  audio.addEventListener('waiting', () => playBtn.classList.add('loading'));
+  audio.addEventListener('stalled', () => playBtn.classList.add('loading'));
+  audio.addEventListener('playing', () => playBtn.classList.remove('loading'));
+  audio.addEventListener('canplay', () => playBtn.classList.remove('loading'));
 
   function nextSong(){
     const idx = isShuffle
@@ -2756,11 +2776,9 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
   (window.__siteConfigPromise || Promise.resolve(null)).then(cfg => {
     console.log('[siteConfig] dữ liệu tải từ Firestore:', cfg);
     if (cfg && Array.isArray(cfg.playlist) && cfg.playlist.length){
-      playlist = cfg.playlist;
-      currentIdx = 0;
+      playlist = playlist.concat(cfg.playlist); // cộng thêm vào playlist mặc định, không xoá nhạc cũ
       buildList();
-      loadSong(currentIdx, false);
-      if (window.showToast) showToast(`Đã tải playlist tuỳ chỉnh (${playlist.length} bài)`, '🎵');
+      if (window.showToast) showToast(`Đã thêm ${cfg.playlist.length} bài từ Firestore`, '🎵');
     } else if (cfg){
       console.log('[siteConfig] không thấy field "playlist" hợp lệ trong document config/site');
     }
