@@ -263,6 +263,17 @@
     border-top:1px solid var(--panel-border);
   }
   .hero-section{ padding-top:60px; border-top:none; text-align:left; }
+
+  /* ---- reveal-on-scroll: section trồi lên + mờ dần khi cuộn tới ---- */
+  .reveal{
+    opacity:0;
+    transform:translateY(28px);
+    transition:opacity .7s cubic-bezier(.16,1,.3,1), transform .7s cubic-bezier(.16,1,.3,1);
+  }
+  .reveal.in-view{
+    opacity:1;
+    transform:translateY(0);
+  }
   .profile-bar{
     display:flex;
     align-items:center;
@@ -316,6 +327,11 @@
     border:1px solid var(--panel-border);
     border-radius:12px;
     padding:11px 12px;
+    transition:transform .25s ease, border-color .25s ease;
+  }
+  .feature-card:hover{
+    transform:translateY(-3px);
+    border-color:rgba(var(--accent-rgb),.4);
   }
   .feature-card-icon{
     width:30px;height:30px;border-radius:8px;
@@ -1019,6 +1035,30 @@
   .star-score{ cursor:default; }
   .achieve-list{ display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; }
   #achieveList{ max-height:none; overflow:visible; }
+
+  /* thanh cuộn mảnh, gọn thay cho scrollbar mặc định to bản của trình duyệt */
+  .achieve-list,
+  .mc-playlist.open{
+    scrollbar-width:thin;
+    scrollbar-color:rgba(var(--accent-rgb),.4) transparent;
+  }
+  .achieve-list::-webkit-scrollbar,
+  .mc-playlist.open::-webkit-scrollbar{
+    width:5px;
+  }
+  .achieve-list::-webkit-scrollbar-track,
+  .mc-playlist.open::-webkit-scrollbar-track{
+    background:transparent;
+  }
+  .achieve-list::-webkit-scrollbar-thumb,
+  .mc-playlist.open::-webkit-scrollbar-thumb{
+    background:rgba(var(--accent-rgb),.35);
+    border-radius:99px;
+  }
+  .achieve-list::-webkit-scrollbar-thumb:hover,
+  .mc-playlist.open::-webkit-scrollbar-thumb:hover{
+    background:rgba(var(--accent-rgb),.55);
+  }
   .achieve-item{
     display:flex; align-items:center; gap:10px;
     font-size:12px; color:var(--text-low);
@@ -1027,7 +1067,11 @@
     border:1px solid var(--panel-border);
     border-radius:10px;
     padding:9px 10px;
-    transition:opacity .2s ease;
+    transition:opacity .2s ease, transform .25s ease, border-color .25s ease;
+  }
+  .achieve-item:hover{
+    transform:translateY(-2px);
+    border-color:rgba(var(--accent-rgb),.35);
   }
   .achieve-item.unlocked{ opacity:1; color:var(--text-hi); }
   .achieve-item .ai-icon{
@@ -1066,9 +1110,16 @@
   .lb-loading{ font-size:12px; color:var(--text-low); text-align:center; padding:10px 0; }
   .lb-row{
     display:flex; align-items:center; gap:10px;
-    padding:6px 0;
+    padding:6px 8px;
+    margin:0 -8px;
     font-size:12.5px;
     color:var(--text-mid);
+    border-radius:8px;
+    transition:background .2s ease, transform .2s ease;
+  }
+  .lb-row:hover{
+    background:rgba(255,255,255,.03);
+    transform:translateX(3px);
   }
   .lb-row.me{ color:var(--text-hi); font-weight:600; }
   .lb-rank{
@@ -1227,9 +1278,10 @@
       <a href="#hero" class="nav-brand">Thanhann</a>
       <div class="nav-links">
         <a href="#info">Hồ sơ</a>
-        <a href="#activity">Hoạt động</a>
         <a href="#music">Đang nghe</a>
         <a href="#snake">Rắn săn mồi</a>
+        <a href="#activity">Hoạt động</a>
+        <a href="#achievements">Thành tựu</a>
         <a href="#leaderboard">Xếp hạng</a>
         <a href="#fortune">Rút quẻ</a>
       </div>
@@ -1360,50 +1412,6 @@
       </div>
     </section>
 
-    <!-- ================= ACTIVITY ================= -->
-    <section class="section" id="activity">
-      <div class="section-head">
-        <div class="section-eyebrow">Thống kê</div>
-        <div class="section-title">📊 Hoạt động</div>
-        <p class="section-desc">Thống kê tổng quan hoạt động của bạn trên trang.</p>
-      </div>
-      <div class="section-panel">
-        <div class="activity-row">
-          <div class="activity-row-head">
-            <span>⭐ Bắt ngôi sao xuất hiện ngẫu nhiên</span>
-            <span class="activity-row-val"><b id="actStarVal">0</b> / <span id="actStarMax">500</span></span>
-          </div>
-          <div class="activity-bar"><div class="activity-bar-fill" id="actStarBar"></div></div>
-        </div>
-        <div class="activity-row">
-          <div class="activity-row-head">
-            <span>🐍 Snake game high score</span>
-            <span class="activity-row-val"><b id="actSnakeVal">0</b> / <span id="actSnakeMax">100</span></span>
-          </div>
-          <div class="activity-bar"><div class="activity-bar-fill" id="actSnakeBar"></div></div>
-        </div>
-        <div class="activity-row">
-          <div class="activity-row-head">
-            <span>🎧 Thời gian nghe nhạc</span>
-            <span class="activity-row-val"><b id="actMusicVal">0</b> / <span id="actMusicMax">300</span> phút</span>
-          </div>
-          <div class="activity-bar"><div class="activity-bar-fill" id="actMusicBar"></div></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ================= ACHIEVEMENTS ================= -->
-    <section class="section" id="achievements">
-      <div class="section-head">
-        <div class="section-eyebrow">Cột mốc</div>
-        <div class="section-title">🏆 Thành tựu</div>
-      </div>
-      <div class="section-panel" id="achievePanel">
-        <div class="settings-label">Thành tựu (<span id="achieveCount">0</span>/<span id="achieveTotal">6</span>)</div>
-        <div class="achieve-list achieve-grid" id="achieveList"></div>
-      </div>
-    </section>
-
     <!-- ================= MUSIC ================= -->
     <section class="section" id="music">
       <div class="section-head">
@@ -1489,6 +1497,50 @@
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
           </button>
         </div>
+      </div>
+    </section>
+
+    <!-- ================= ACTIVITY ================= -->
+    <section class="section" id="activity">
+      <div class="section-head">
+        <div class="section-eyebrow">Thống kê</div>
+        <div class="section-title">📊 Hoạt động</div>
+        <p class="section-desc">Thống kê tổng quan hoạt động của bạn trên trang.</p>
+      </div>
+      <div class="section-panel">
+        <div class="activity-row">
+          <div class="activity-row-head">
+            <span>⭐ Bắt ngôi sao xuất hiện ngẫu nhiên</span>
+            <span class="activity-row-val"><b id="actStarVal">0</b> / <span id="actStarMax">500</span></span>
+          </div>
+          <div class="activity-bar"><div class="activity-bar-fill" id="actStarBar"></div></div>
+        </div>
+        <div class="activity-row">
+          <div class="activity-row-head">
+            <span>🐍 Snake game high score</span>
+            <span class="activity-row-val"><b id="actSnakeVal">0</b> / <span id="actSnakeMax">100</span></span>
+          </div>
+          <div class="activity-bar"><div class="activity-bar-fill" id="actSnakeBar"></div></div>
+        </div>
+        <div class="activity-row">
+          <div class="activity-row-head">
+            <span>🎧 Thời gian nghe nhạc</span>
+            <span class="activity-row-val"><b id="actMusicVal">0</b> / <span id="actMusicMax">300</span> phút</span>
+          </div>
+          <div class="activity-bar"><div class="activity-bar-fill" id="actMusicBar"></div></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================= ACHIEVEMENTS ================= -->
+    <section class="section" id="achievements">
+      <div class="section-head">
+        <div class="section-eyebrow">Cột mốc</div>
+        <div class="section-title">🏆 Thành tựu</div>
+      </div>
+      <div class="section-panel" id="achievePanel">
+        <div class="settings-label">Thành tựu (<span id="achieveCount">0</span>/<span id="achieveTotal">6</span>)</div>
+        <div class="achieve-list achieve-grid" id="achieveList"></div>
       </div>
     </section>
 
@@ -2275,7 +2327,32 @@ loadSnakeLeaderboard();
   loadWeather();
 })();
 
-/* ---------------------------- NAV: SCROLLSPY ---------------------------- */
+/* ---------------------------- SCROLL REVEAL ANIMATION ---------------------------- */
+(function scrollReveal(){
+  const sections = document.querySelectorAll('main > .section');
+  if (!sections.length) return;
+
+  // Hero luôn hiện sẵn ngay từ đầu (không cần cuộn mới thấy), các section còn lại mới áp animation
+  sections.forEach(s => { if (s.id !== 'hero') s.classList.add('reveal'); });
+
+  if (!('IntersectionObserver' in window)){
+    sections.forEach(s => s.classList.add('in-view'));
+    return;
+  }
+
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting){
+        entry.target.classList.add('in-view');
+        io.unobserve(entry.target); // chỉ chạy 1 lần, không lặp lại khi cuộn qua lại
+      }
+    });
+  }, { threshold: 0.08, rootMargin: '0px 0px -60px 0px' });
+
+  sections.forEach(s => { if (s.classList.contains('reveal')) io.observe(s); });
+})();
+
+
 (function navScrollUX(){
   const navLinks = Array.from(document.querySelectorAll('.nav-links a'));
   const sections = navLinks
@@ -2556,6 +2633,51 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
     return Math.floor(s/60) + ':' + String(Math.floor(s%60)).padStart(2,'0');
   };
 
+  /* ── Media Session API (điều khiển nhạc từ màn hình khoá / tai nghe / thanh thông báo) ── */
+  const hasMediaSession = 'mediaSession' in navigator;
+
+  function updateMediaSessionMetadata(song){
+    if (!hasMediaSession) return;
+    try{
+      navigator.mediaSession.metadata = new MediaMetadata({
+        title: song.title || 'ThanhAnn',
+        artist: song.artist || '',
+        album: 'ThanhAnn — Đang nghe',
+        artwork: song.cover ? [
+          { src: song.cover, sizes: '96x96',   type: 'image/jpeg' },
+          { src: song.cover, sizes: '256x256', type: 'image/jpeg' },
+          { src: song.cover, sizes: '512x512', type: 'image/jpeg' },
+        ] : []
+      });
+    }catch(err){ console.warn('MediaSession metadata failed:', err); }
+  }
+
+  function updateMediaSessionPlaybackState(){
+    if (!hasMediaSession) return;
+    navigator.mediaSession.playbackState = isPlaying ? 'playing' : 'paused';
+  }
+
+  if (hasMediaSession){
+    try{
+      navigator.mediaSession.setActionHandler('play',  () => play());
+      navigator.mediaSession.setActionHandler('pause', () => pause());
+      navigator.mediaSession.setActionHandler('previoustrack', () => prevSong());
+      navigator.mediaSession.setActionHandler('nexttrack',     () => nextSong());
+      navigator.mediaSession.setActionHandler('stop', () => pause());
+      navigator.mediaSession.setActionHandler('seekto', (details) => {
+        if (details.seekTime != null && audio.duration){
+          audio.currentTime = details.seekTime;
+        }
+      });
+      navigator.mediaSession.setActionHandler('seekbackward', (details) => {
+        audio.currentTime = Math.max(0, audio.currentTime - (details.seekOffset || 10));
+      });
+      navigator.mediaSession.setActionHandler('seekforward', (details) => {
+        audio.currentTime = Math.min(audio.duration || 0, audio.currentTime + (details.seekOffset || 10));
+      });
+    }catch(err){ console.warn('MediaSession action handlers failed:', err); }
+  }
+
   function setPlayingUI(on){
     isPlaying = on;
     playIcon.innerHTML = on
@@ -2566,6 +2688,7 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
     const ledName = document.getElementById('ledName');
     if (ledName) ledName.classList.toggle('jump', on);
     if (on) unlockAchievement('music');
+    updateMediaSessionPlaybackState();
   }
 
   function play(){
@@ -2590,6 +2713,7 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
     curEl.textContent = '0:00';
     durEl.textContent = '0:00';
     setPlayingUI(false);
+    updateMediaSessionMetadata(song);
 
     if (song.audio){
       audio.src = song.audio;
@@ -2619,12 +2743,33 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
     durEl.textContent = fmt(audio.duration);
     const durSpan = document.getElementById('mc-dur-' + currentIdx);
     if (durSpan) durSpan.textContent = fmt(audio.duration);
+    if (hasMediaSession && audio.duration && isFinite(audio.duration)){
+      try{
+        navigator.mediaSession.setPositionState({
+          duration: audio.duration,
+          playbackRate: audio.playbackRate || 1,
+          position: audio.currentTime
+        });
+      }catch(err){ /* một số trình duyệt cũ không hỗ trợ, bỏ qua */ }
+    }
   });
   let __lastAudioTime = null;
+  let __lastPosSync = 0;
   audio.addEventListener('timeupdate', () => {
     if (!isSeeking && audio.duration){
       progress.value = (audio.currentTime / audio.duration) * 100;
       curEl.textContent = fmt(audio.currentTime);
+    }
+    // cập nhật vị trí cho thanh cuộn trên màn hình khoá, không cần gọi liên tục mỗi frame
+    if (hasMediaSession && audio.duration && isFinite(audio.duration) && Date.now() - __lastPosSync > 1000){
+      __lastPosSync = Date.now();
+      try{
+        navigator.mediaSession.setPositionState({
+          duration: audio.duration,
+          playbackRate: audio.playbackRate || 1,
+          position: audio.currentTime
+        });
+      }catch(err){ /* bỏ qua nếu trình duyệt không hỗ trợ */ }
     }
     // theo dõi thời gian nghe thực tế cho card "Hoạt động" (bỏ qua khi tua/seek/lặp bài)
     if (__lastAudioTime !== null){
@@ -2742,7 +2887,6 @@ if (snake.some(s => s.x === head.x && s.y === head.y)){
     if (cfg && Array.isArray(cfg.playlist) && cfg.playlist.length){
       playlist = playlist.concat(cfg.playlist); // cộng thêm vào playlist mặc định, không xoá nhạc cũ
       buildList();
-      if (window.showToast) showToast(`Đã thêm ${cfg.playlist.length} bài từ Firestore`, '🎵');
     } else if (cfg){
       console.log('[siteConfig] không thấy field "playlist" hợp lệ trong document config/site');
     }
