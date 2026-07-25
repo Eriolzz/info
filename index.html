@@ -275,6 +275,7 @@
     transform:translateY(0);
   }
   .profile-bar{
+    position:relative;
     display:flex;
     align-items:center;
     gap:14px;
@@ -283,6 +284,23 @@
     border-radius:999px;
     padding:8px 22px 8px 8px;
     margin-bottom:22px;
+    overflow:hidden;
+    isolation:isolate;
+  }
+  /* video nền (chỉ hiện khi có link video được cấu hình, xem PROFILE_VIDEO_URL trong script) */
+  .profile-bar-video{
+    position:absolute;
+    inset:0;
+    width:100%; height:100%;
+    object-fit:cover;
+    z-index:-2;
+  }
+  /* lớp phủ tối để chữ tên/trạng thái vẫn đọc rõ trên nền video */
+  .profile-bar-overlay{
+    position:absolute;
+    inset:0;
+    z-index:-1;
+    background:linear-gradient(90deg, rgba(8,9,14,.72), rgba(8,9,14,.35) 60%, rgba(8,9,14,.15));
   }
   .profile-bar-text{ display:flex; flex-direction:column; gap:3px; min-width:0; }
   .profile-status{ font-size:12.5px; color:var(--text-mid); }
@@ -1322,6 +1340,8 @@
 
       <!-- compact profile bar: avatar + name only -->
       <div class="profile-bar">
+        <video class="profile-bar-video" id="profileBarVideo" autoplay muted loop playsinline style="display:none;"></video>
+        <div class="profile-bar-overlay" id="profileBarOverlay" style="display:none;"></div>
         <div class="avatar-wrap">
           <div class="avatar-glow"></div>
           <img src="https://files.catbox.moe/y1mbdh.jpg" class="avatar" id="avatar" draggable="false" fetchpriority="high" decoding="async">
@@ -1646,13 +1666,15 @@
    ========================================================================= */
 
 /* ---------------------------- ẢNH AVATAR + CẤU HÌNH TỪ FIRESTORE (SỬA KHÔNG CẦN CODE) ----------------------------
-   Cách đổi avatar / thêm-đổi nhạc mà KHÔNG cần sửa file này:
+   Cách đổi avatar / thêm-đổi nhạc / thêm video nền card profile mà KHÔNG cần sửa file này:
    1. Vào Firebase Console → Firestore Database.
    2. Tạo collection "config" → document id đặt là "site" (nếu chưa có).
    3. Thêm field "avatarUrl" (string) = link ảnh mới để đổi avatar.
    4. Thêm field "playlist" (array) = danh sách map, mỗi map có 4 field: title, artist, cover, audio
       (giống hệt cấu trúc bên dưới) để đổi/thêm bài nhạc.
-   5. Lưu lại, tải lại trang — avatar/nhạc sẽ tự lấy theo, không cần đụng code.
+   5. Thêm field "profileVideoUrl" (string) = link video (.mp4) để làm nền cho card profile trên
+      cùng. Để trống / không thêm field này thì card vẫn hiện nền gradient như mặc định.
+   6. Lưu lại, tải lại trang — mọi thứ sẽ tự lấy theo, không cần đụng code.
    Nếu không tạo document này (hoặc mất mạng), trang vẫn chạy bình thường với giá trị mặc định
    bên dưới, không bị lỗi gì cả.
 
@@ -1661,6 +1683,11 @@
    sửa tay 2 dòng meta đó trong file nếu muốn đổi ảnh preview khi share.
 --------------------------------------------------------------------------- */
 let AVATAR_URL = 'https://files.catbox.moe/y1mbdh.jpg';
+
+// Video nền cho card profile — để trống '' nếu chỉ muốn nền gradient như mặc định.
+// Sửa trực tiếp ở đây (không cần Firestore), hoặc cấu hình field "profileVideoUrl" trên Firestore
+// (Firestore sẽ được ưu tiên hơn nếu có, xem loadSiteConfig bên dưới).
+let PROFILE_VIDEO_URL = '';
 
 function applyAvatarEverywhere(url){
   const avatarImg = document.getElementById('avatar');
@@ -1671,6 +1698,29 @@ function applyAvatarEverywhere(url){
   if (appleIcon) appleIcon.href = url;
 }
 applyAvatarEverywhere(AVATAR_URL); // hiện ngay giá trị mặc định, không đợi mạng
+
+function applyProfileVideo(url){
+  const video = document.getElementById('profileBarVideo');
+  const overlay = document.getElementById('profileBarOverlay');
+  if (!video || !overlay) return;
+  if (!url){
+    video.style.display = 'none';
+    overlay.style.display = 'none';
+    return;
+  }
+  const reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  video.src = url;
+  video.style.display = '';
+  overlay.style.display = '';
+  if (reduceMotion){
+    // tôn trọng "giảm chuyển động": hiện khung hình đầu làm ảnh tĩnh, không tự phát
+    video.autoplay = false;
+    video.pause();
+  } else {
+    video.play().catch(() => {}); // một số trình duyệt chặn autoplay, bỏ qua lỗi cho êm
+  }
+}
+applyProfileVideo(PROFILE_VIDEO_URL);
 
 async function loadSiteConfig(){
   // đợi tối đa ~3s cho module Firebase sẵn sàng (nó load async ở đầu trang)
@@ -1684,11 +1734,15 @@ async function loadSiteConfig(){
   return null;
 }
 
-// Promise dùng chung: avatar và trình phát nhạc cùng đợi 1 lần fetch config duy nhất
+// Promise dùng chung: avatar, nhạc, và video nền cùng đợi 1 lần fetch config duy nhất
 window.__siteConfigPromise = loadSiteConfig().then(cfg => {
   if (cfg && cfg.avatarUrl){
     AVATAR_URL = cfg.avatarUrl;
     applyAvatarEverywhere(AVATAR_URL);
+  }
+  if (cfg && cfg.profileVideoUrl){
+    PROFILE_VIDEO_URL = cfg.profileVideoUrl;
+    applyProfileVideo(PROFILE_VIDEO_URL);
   }
   return cfg;
 });
