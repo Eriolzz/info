@@ -1888,6 +1888,13 @@ window.__siteConfigPromise = loadSiteConfig().then(cfg => {
 });
 
 // Global icon constants - accessible throughout script
+// Cờ tạm dừng hiệu ứng nền (particles, sao lấp lánh, đồng hồ...) khi mở popup game trên mobile
+// — nhạc KHÔNG bị ảnh hưởng bởi cờ này, xem flappyBirdPopup() ở cuối file.
+window.__pauseBackgroundFX = false;
+function isMobileDevice(){
+  return window.matchMedia && window.matchMedia('(hover: none)').matches;
+}
+
 const ICON_PLAY = '<path d="M8 5v14l11-7z"/>';
 const ICON_PAUSE = '<path d="M6 5h4v14H6zM14 5h4v14h-4z"/>';
 
@@ -2101,11 +2108,15 @@ function showFinale(){
     modal.classList.add('open');
     document.body.style.overflow = 'hidden';
     unlockAchievement('flappy');
+    // Trên mobile: tạm dừng hiệu ứng nền (particles, sao lấp lánh, đồng hồ...) để dồn tài nguyên
+    // cho game, đỡ giật/tốn pin. Nhạc KHÔNG bị ảnh hưởng, vẫn phát bình thường.
+    if (isMobileDevice()) window.__pauseBackgroundFX = true;
   }
   function closeGame(){
     modal.classList.remove('open');
     document.body.style.overflow = '';
     frame.src = 'about:blank'; // gỡ hẳn iframe để dừng game/âm thanh đang chạy nền, không chỉ ẩn đi
+    window.__pauseBackgroundFX = false;
   }
 
   openBtn.addEventListener('click', openGame);
@@ -2174,6 +2185,7 @@ renderAchieveList();
   spawn();
 
   function tick(){
+    if (window.__pauseBackgroundFX){ requestAnimationFrame(tick); return; }
     ctx.clearRect(0,0,w,h);
     const accent = getAccent();
     particles.forEach(p=>{
@@ -3182,7 +3194,7 @@ function updateActivityBars(){
 }
 window.updateActivityBars = updateActivityBars;
 updateActivityBars();
-setInterval(updateActivityBars, 3000);
+setInterval(() => { if (!window.__pauseBackgroundFX) updateActivityBars(); }, 3000);
 
 /* ---------------------------- VISIT STREAK ---------------------------- */
 (function visitStreak(){
@@ -3239,6 +3251,7 @@ setInterval(updateActivityBars, 3000);
   const el = document.getElementById('statusText');
   let i = 0;
   setInterval(() => {
+    if (window.__pauseBackgroundFX) return;
     i = (i+1) % statuses.length;
     el.style.opacity = 0;
     setTimeout(() => {
@@ -3317,7 +3330,10 @@ setInterval(updateActivityBars, 3000);
 
   function scheduleNext(){
     const delay = 3500 + Math.random() * 5000; // lâu lâu mới hiện một lần, 3.5–8.5s
-    setTimeout(() => { spawnStar(); scheduleNext(); }, delay);
+    setTimeout(() => {
+      if (!window.__pauseBackgroundFX) spawnStar();
+      scheduleNext();
+    }, delay);
   }
   scheduleNext();
 })();
@@ -3326,6 +3342,7 @@ setInterval(updateActivityBars, 3000);
   const el = document.getElementById('clockText');
   if (!el) return;
   function update(){
+    if (window.__pauseBackgroundFX) return;
     const now = new Date();
     el.textContent = now.toLocaleTimeString('vi-VN', {
       timeZone: 'Asia/Ho_Chi_Minh',
