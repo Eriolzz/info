@@ -928,6 +928,77 @@
     padding:24px;
   }
   .egg-overlay.open{ opacity:1; pointer-events:auto; }
+
+  /* ---- Flappy Bird teaser card ---- */
+  .flappy-teaser{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    text-align:left;
+  }
+  .flappy-teaser-icon{
+    width:48px; height:48px; flex-shrink:0;
+    border-radius:12px;
+    background:rgba(var(--accent-rgb),.14);
+    display:flex; align-items:center; justify-content:center;
+    font-size:24px;
+  }
+  .flappy-teaser-text{ flex:1; min-width:0; }
+  .flappy-teaser-title{ font-size:13px; font-weight:700; color:var(--text-hi); }
+  .flappy-teaser-sub{ font-size:11.5px; color:var(--text-low); margin-top:2px; }
+  .flappy-play-btn{ width:auto !important; padding:9px 18px !important; margin-top:0 !important; flex-shrink:0; }
+  @media (max-width:480px){
+    .flappy-teaser{ flex-wrap:wrap; }
+    .flappy-play-btn{ width:100% !important; margin-top:10px !important; }
+  }
+
+  /* ---- popup mini-game modal ---- */
+  .game-modal-overlay{
+    position:fixed; inset:0;
+    background:rgba(8,8,14,.82);
+    backdrop-filter:blur(8px);
+    display:flex; align-items:center; justify-content:center;
+    z-index:10001;
+    opacity:0; pointer-events:none;
+    transition:opacity .25s ease;
+    padding:20px;
+  }
+  .game-modal-overlay.open{ opacity:1; pointer-events:auto; }
+  .game-modal-frame-wrap{
+    position:relative;
+    width:100%;
+    max-width:420px;
+    aspect-ratio:9/16;
+    max-height:88vh;
+    border-radius:20px;
+    overflow:hidden;
+    box-shadow:0 30px 80px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.06);
+    transform:scale(.92) translateY(14px);
+    transition:transform .25s ease;
+    background:var(--bg-1);
+  }
+  .game-modal-overlay.open .game-modal-frame-wrap{ transform:scale(1) translateY(0); }
+  .game-modal-iframe{
+    width:100%; height:100%;
+    border:none;
+    display:block;
+  }
+  .game-modal-close{
+    position:absolute;
+    top:10px; right:10px;
+    z-index:2;
+    width:32px; height:32px;
+    border-radius:50%;
+    border:1px solid rgba(255,255,255,.15);
+    background:rgba(8,8,14,.55);
+    backdrop-filter:blur(4px);
+    color:#fff;
+    font-size:15px;
+    display:flex; align-items:center; justify-content:center;
+    cursor:pointer;
+    transition:background .2s ease, transform .2s ease;
+  }
+  .game-modal-close:hover{ background:rgba(var(--accent-rgb),.5); transform:scale(1.08); }
   .egg-card{
     background:linear-gradient(160deg, var(--bg-2), var(--bg-1));
     border:1px solid rgba(var(--accent-rgb),.35);
@@ -1298,6 +1369,7 @@
         <a href="#info">Hồ sơ</a>
         <a href="#music">Đang nghe</a>
         <a href="#snake">Rắn săn mồi</a>
+        <a href="#flappy">Flappy Bird</a>
         <a href="#activity">Hoạt động</a>
         <a href="#achievements">Thành tựu</a>
         <a href="#leaderboard">Xếp hạng</a>
@@ -1522,6 +1594,23 @@
       </div>
     </section>
 
+    <!-- ================= FLAPPY BIRD ================= -->
+    <section class="section" id="flappy">
+      <div class="section-head">
+        <div class="section-eyebrow">Trò chơi</div>
+        <div class="section-title">🐤 Flappy Bird</div>
+        <p class="section-desc">Bấm hoặc nhấn Space để giữ cho chim bay qua các cột. Chạm vào là thua ngay đó nha!</p>
+      </div>
+      <div class="section-panel flappy-teaser">
+        <div class="flappy-teaser-icon">🐤</div>
+        <div class="flappy-teaser-text">
+          <div class="flappy-teaser-title">Bay càng xa càng ghi điểm cao</div>
+          <div class="flappy-teaser-sub">Mở ở cửa sổ riêng, không rời khỏi trang này</div>
+        </div>
+        <button class="lb-rename-btn flappy-play-btn" id="flappyOpenBtn">▶️ Chơi ngay</button>
+      </div>
+    </section>
+
     <!-- ================= ACTIVITY ================= -->
     <section class="section" id="activity">
       <div class="section-head">
@@ -1643,6 +1732,14 @@
     <div class="egg-title">Konami Code!</div>
     <div class="egg-text">Không ngờ bạn lại biết combo huyền thoại ↑↑↓↓←→←→BA. Đỉnh thật đấy, dân chơi hệ retro 🎮</div>
     <button class="egg-close" id="konamiClose">Đóng lại</button>
+  </div>
+</div>
+
+<!-- popup mini-game Flappy Bird — tải từ file riêng flappy-bird.html qua iframe -->
+<div class="game-modal-overlay" id="flappyModal">
+  <div class="game-modal-frame-wrap">
+    <button class="game-modal-close" id="flappyCloseBtn" aria-label="Đóng trò chơi">✕</button>
+    <iframe id="flappyFrame" class="game-modal-iframe" title="Flappy Bird" allow="autoplay"></iframe>
   </div>
 </div>
 
@@ -1835,6 +1932,7 @@ const ACHIEVEMENTS = {
   fortune:{ icon:'🎴', title:'Xem vận may',  desc:'Rút một quẻ' },
   konami: { icon:'🕹️', title:'Dân chơi hệ retro', desc:'Nhập đúng Konami code' },
   snake:  { icon:'🐍', title:'Thợ săn mồi',  desc:'Ăn được 5 mồi trong 1 ván rắn' },
+  flappy: { icon:'🐤', title:'Phi công gà',  desc:'Mở trò chơi Flappy Bird' },
 };
 const ACHIEVE_KEY = 'profile-achievements';
 function getUnlocked(){
@@ -1988,6 +2086,34 @@ function showFinale(){
   const konamiClose = document.getElementById('konamiClose');
   if (konamiClose) konamiClose.addEventListener('click', () => konamiOverlay.classList.remove('open'));
   if (konamiOverlay) konamiOverlay.addEventListener('click', (e) => { if (e.target === konamiOverlay) konamiOverlay.classList.remove('open'); });
+})();
+
+/* ---------------------------- FLAPPY BIRD (popup, file riêng flappy-bird.html) ---------------------------- */
+(function flappyBirdPopup(){
+  const openBtn  = document.getElementById('flappyOpenBtn');
+  const modal    = document.getElementById('flappyModal');
+  const closeBtn = document.getElementById('flappyCloseBtn');
+  const frame    = document.getElementById('flappyFrame');
+  if (!openBtn || !modal || !frame) return;
+
+  function openGame(){
+    frame.src = 'flappy-bird.html'; // luôn nạp lại mới mỗi lần mở, đảm bảo ván chơi bắt đầu sạch
+    modal.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    unlockAchievement('flappy');
+  }
+  function closeGame(){
+    modal.classList.remove('open');
+    document.body.style.overflow = '';
+    frame.src = 'about:blank'; // gỡ hẳn iframe để dừng game/âm thanh đang chạy nền, không chỉ ẩn đi
+  }
+
+  openBtn.addEventListener('click', openGame);
+  closeBtn.addEventListener('click', closeGame);
+  modal.addEventListener('click', (e) => { if (e.target === modal) closeGame(); });
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && modal.classList.contains('open')) closeGame();
+  });
 })();
 
 renderAchieveList();
