@@ -174,33 +174,67 @@
     flex-direction:column;
     align-items:center;
     justify-content:center;
-    gap:22px;
+    gap:20px;
     transition:opacity .6s ease, visibility .6s ease;
   }
   #loader.hidden{opacity:0;visibility:hidden;}
 
-  .loader-ring{
-    width:64px;height:64px;
-    border-radius:50%;
-    border:3px solid rgba(255,255,255,0.08);
+  .loader-mark{
+    position:relative;
+    width:52px;height:52px;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .loader-mark-ring{
+    position:absolute;inset:0;
+    border-radius:16px;
+    border:2px solid rgba(255,255,255,0.08);
     border-top-color:var(--accent);
     border-right-color:var(--accent-2);
-    animation:spin 1s linear infinite;
+    animation:spin 1.1s cubic-bezier(.6,.05,.4,.95) infinite;
+  }
+  .loader-mark-badge{
+    width:34px;height:34px;
+    border-radius:10px;
+    background:linear-gradient(135deg,var(--accent),var(--accent-2));
+    display:flex;align-items:center;justify-content:center;
+    font-family:'Inter',sans-serif;
+    font-weight:800;
+    font-size:13px;
+    color:#0a0908;
+    letter-spacing:-.02em;
+    box-shadow:0 4px 18px rgba(var(--accent-rgb),.45);
   }
   @keyframes spin{to{transform:rotate(360deg);}}
 
-  .loader-text{
+  .loader-brand{
     font-family:'Inter',sans-serif;
-    font-size:14px;
+    font-size:12px;
+    font-weight:700;
     letter-spacing:3px;
     text-transform:uppercase;
-    color:var(--text-mid);
+    color:var(--text-hi);
+  }
+
+  .loader-bar-track{
+    width:160px;
+    height:3px;
+    border-radius:99px;
+    background:rgba(255,255,255,0.08);
+    overflow:hidden;
+  }
+  .loader-bar-fill{
+    height:100%;
+    width:0%;
+    border-radius:99px;
+    background:linear-gradient(90deg,var(--accent),var(--accent-2));
+    transition:width .18s ease-out;
   }
   .loader-pct{
     font-family:'Inter',sans-serif;
-    font-size:13px;
-    color:var(--accent);
-    letter-spacing:1px;
+    font-size:11px;
+    color:var(--text-low);
+    letter-spacing:.5px;
+    font-variant-numeric:tabular-nums;
   }
 
   /* ============================= LAYOUT ============================= */
@@ -1353,8 +1387,12 @@
 <div class="mouse-glow" id="mouseGlow"></div>
 
 <div id="loader">
-  <div class="loader-ring"></div>
-  <div class="loader-text">Chờ xíu ...</div>
+  <div class="loader-mark">
+    <div class="loader-mark-ring"></div>
+    <div class="loader-mark-badge">TA</div>
+  </div>
+  <div class="loader-brand">ThanhAnn</div>
+  <div class="loader-bar-track"><div class="loader-bar-fill" id="loaderBar"></div></div>
   <div class="loader-pct" id="loaderPct">0%</div>
 </div>
 
@@ -1891,6 +1929,9 @@ window.__siteConfigPromise = loadSiteConfig().then(cfg => {
 // Cờ tạm dừng hiệu ứng nền (particles, sao lấp lánh, đồng hồ...) khi mở popup game trên mobile
 // — nhạc KHÔNG bị ảnh hưởng bởi cờ này, xem flappyBirdPopup() ở cuối file.
 window.__pauseBackgroundFX = false;
+window.__currentAccentRgb = '99,102,241'; // cache màu accent hiện tại (khớp mặc định :root), tránh gọi getComputedStyle lặp lại trong vòng lặp animation
+window.__currentAccentHex = '#6366f1';
+window.__currentAccent2Hex = '#818cf8';
 function isMobileDevice(){
   return window.matchMedia && window.matchMedia('(hover: none)').matches;
 }
@@ -2131,6 +2172,7 @@ renderAchieveList();
 (function loaderSequence(){
   const loader = document.getElementById('loader');
   const pctEl = document.getElementById('loaderPct');
+  const barEl = document.getElementById('loaderBar');
   const page = document.getElementById('page');
   let pct = 0;
 
@@ -2140,6 +2182,7 @@ renderAchieveList();
       pct = 100;
       clearInterval(interval);
       pctEl.textContent = '100%';
+      if (barEl) barEl.style.width = '100%';
       setTimeout(() => {
         loader.classList.add('hidden');
         page.classList.add('show');
@@ -2148,6 +2191,7 @@ renderAchieveList();
       return;
     }
     pctEl.textContent = Math.floor(pct) + '%';
+    if (barEl) barEl.style.width = pct + '%';
   }, 90);
 })();
 
@@ -2166,7 +2210,9 @@ renderAchieveList();
   resize();
 
   function getAccent(){
-    return getComputedStyle(document.documentElement).getPropertyValue('--accent-rgb').trim() || '157,123,255';
+    // Đọc từ cache thay vì gọi getComputedStyle() mỗi khung hình (rất tốn) —
+    // cache được cập nhật đúng 1 lần mỗi khi người dùng đổi màu theme, xem settingsPanel().
+    return window.__currentAccentRgb || '99,102,241';
   }
 
   function spawn(){
@@ -2275,6 +2321,9 @@ renderAchieveList();
       root.style.setProperty('--accent-rgb', accentRgb);
       root.style.setProperty('--accent', hex);
       root.style.setProperty('--accent-2', accent2);
+      window.__currentAccentRgb = accentRgb; // đồng bộ cache cho vòng lặp particles, tránh phải đọc lại từ CSS
+      window.__currentAccentHex = hex;
+      window.__currentAccent2Hex = accent2;
       swatches.forEach(s => s.classList.remove('active'));
       sw.classList.add('active');
       localStorage.setItem('profile-accent', JSON.stringify({accentRgb, hex, accent2}));
@@ -2289,6 +2338,9 @@ renderAchieveList();
       root.style.setProperty('--accent-rgb', accentRgb);
       root.style.setProperty('--accent', hex);
       root.style.setProperty('--accent-2', accent2);
+      window.__currentAccentRgb = accentRgb; // đồng bộ cache cho vòng lặp particles ngay khi khôi phục theme đã lưu
+      window.__currentAccentHex = hex;
+      window.__currentAccent2Hex = accent2;
     }catch(err){ }
   }
 })();
@@ -2626,7 +2678,11 @@ loadSnakeLeaderboard();
   const SPEED_START = 150;
 
   function styleColor(varName){
-    return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+    // Đọc từ cache dùng chung thay vì gọi getComputedStyle() mỗi lần vẽ (draw() chạy liên tục khi
+    // đang chơi) — cache được cập nhật đúng 1 lần mỗi khi người dùng đổi màu theme.
+    if (varName === '--accent') return window.__currentAccentHex || '#6366f1';
+    if (varName === '--accent-2') return window.__currentAccent2Hex || '#818cf8';
+    return '';
   }
 
   function randomFood(){
