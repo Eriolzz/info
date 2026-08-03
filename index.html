@@ -28,7 +28,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preconnect" href="https://files.catbox.moe" crossorigin>
 <link rel="dns-prefetch" href="https://files.catbox.moe">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
 <!-- Firebase (leaderboard đồng bộ) -->
 <script type="module">
@@ -559,10 +559,6 @@
     font-size:11px; letter-spacing:.6px; color:var(--text-low);
     border-top:1px solid var(--panel-border);
   }
-  .weather-widget{
-    display:flex; align-items:center; gap:5px;
-    color:var(--text-mid);
-  }
 
   @media (max-width:640px){
     .feature-grid{ grid-template-columns:1fr 1fr; }
@@ -571,18 +567,6 @@
     .feature-grid{ grid-template-columns:1fr; }
   }
 
-  /* ============================= CARD (legacy inner containers) ============================= */
-  .card{
-    width:100%;
-    position:relative;
-    overflow:hidden;
-  }
-
-  /* top controls row */
-  .topbar{
-    display:flex;
-    gap:6px;
-  }
   .icon-btn{
     width:30px;height:30px;
     border-radius:8px;
@@ -659,20 +643,6 @@
   }
 
   /* ============================= IDENTITY ============================= */
-  .identity{
-    text-align:left;
-    flex:1;
-    min-width:0;
-  }
-  .eyebrow{
-    font-size:10px;
-    font-weight:600;
-    text-transform:uppercase;
-    letter-spacing:2.5px;
-    color:var(--accent);
-    opacity:.75;
-    margin-bottom:6px;
-  }
   .username{
     font-family:'Inter',sans-serif;
     font-size:21px;
@@ -686,55 +656,6 @@
   .username .verified{
     width:16px;height:16px;
     color:var(--accent);
-  }
-
-  .thought-bubble{
-    position:absolute;
-    bottom:calc(100% + 12px);
-    left:0;
-    max-width:120px;
-    background:rgba(255,255,255,0.06);
-    backdrop-filter:blur(10px);
-    -webkit-backdrop-filter:blur(10px);
-    border:1px solid var(--panel-border);
-    border-radius:14px;
-    padding:6px 11px;
-    font-size:10.5px;
-    line-height:1.3;
-    color:var(--text-mid);
-    text-align:center;
-    z-index:1;
-    transform-origin:bottom left;
-    opacity:0;
-    transform:scale(0);
-    animation:bubblePop .55s cubic-bezier(.34,1.56,.64,1) 1s forwards;
-  }
-  .thought-bubble::before{
-    content:'';
-    position:absolute;
-    width:8px;height:8px;
-    left:14px; bottom:-11px;
-    background:rgba(255,255,255,0.06);
-    border:1px solid var(--panel-border);
-    border-radius:50%;
-  }
-  .thought-bubble::after{
-    content:'';
-    position:absolute;
-    width:5px;height:5px;
-    left:8px; bottom:-18px;
-    background:rgba(255,255,255,0.06);
-    border:1px solid var(--panel-border);
-    border-radius:50%;
-  }
-  @keyframes bubblePop{
-    0%{ opacity:0; transform:scale(0) translateY(6px); }
-    55%{ opacity:1; transform:scale(1.1) translateY(-3px); }
-    75%{ transform:scale(0.95) translateY(1px); }
-    100%{ opacity:1; transform:scale(1) translateY(0); }
-  }
-  @media (prefers-reduced-motion: reduce){
-    .thought-bubble{ animation:none; opacity:1; transform:scale(1); }
   }
 
   /* ============================= LED NAME ============================= */
@@ -932,24 +853,6 @@
   .mc-item-artist{font-size:11px;color:var(--text-mid);margin-top:1px;}
   .mc-item-dur{font-size:11px;color:var(--text-low);flex-shrink:0;}
 
-    /* ============================= FOOTER ROW ============================= */
-  .footer-row{
-    margin-top:18px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    font-size:11px;
-    letter-spacing:.6px;
-    color:var(--text-low);
-  }
-  .visitor-count{
-    display:flex;
-    align-items:center;
-    gap:5px;
-  }
-  .visitor-count svg{width:12px;height:12px;}
-  .visitor-count b{color:var(--text-mid); font-weight:600;}
-
   /* ============================= SETTINGS PANEL ============================= */
   .egg-overlay{
     position:fixed; inset:0;
@@ -1124,9 +1027,6 @@
     will-change:transform;
   }
 
-  /* ============================= CARD TILT ============================= */
-  .card{ transition:transform .12s ease-out; }
-
   /* ============================= TOASTS ============================= */
   .toast-wrap{
     position:fixed; bottom:22px; left:50%;
@@ -1154,8 +1054,6 @@
   .toast.show{ opacity:1; transform:translateY(0) scale(1); }
 
   /* ============================= ACHIEVEMENTS ============================= */
-  .footer-left{ display:flex; align-items:center; gap:12px; }
-  .star-score{ cursor:default; }
   .achieve-list{ display:flex; flex-direction:column; gap:8px; max-height:260px; overflow-y:auto; }
   #achieveList{ max-height:none; overflow:visible; }
 
@@ -1290,40 +1188,10 @@
   }
   .name-input:focus{ border-color:var(--accent); }
 
-  /* ============================= GUESTBOOK ============================= */
-  .gb-list{ max-height:280px; }
-  .gb-item{
-    display:flex; flex-direction:column; gap:2px;
-    padding:8px 0;
-    border-bottom:1px solid var(--panel-border);
-    font-size:12px;
-  }
-  .gb-item:last-child{ border-bottom:none; }
-  .gb-name{ font-weight:600; color:var(--text-hi); font-size:11.5px; }
-  .gb-msg{ color:var(--text-mid); line-height:1.4; word-break:break-word; }
-  .gb-time{ font-size:10px; color:var(--text-low); }
-  .gb-form{ margin-top:10px; display:flex; flex-direction:column; gap:8px; }
-  .gb-input{
-    width:100%;
-    resize:none;
-    padding:8px 12px;
-    border-radius:12px;
-    border:1px solid rgba(var(--accent-rgb),.3);
-    background:rgba(255,255,255,0.05);
-    color:var(--text-hi);
-    font-size:12.5px;
-    font-family:'Inter',sans-serif;
-    outline:none;
-  }
-  .gb-input:focus{ border-color:var(--accent); }
-
   /* ============================= RESPONSIVE ============================= */
   @media (max-width:480px){
-    .card{padding:30px 20px 22px; border-radius:16px;}
     .socials{gap:8px;}
     .username{font-size:19px;}
-    .topbar{gap:6px; top:14px; right:14px;}
-    .icon-btn{width:30px; height:30px; border-radius:7px;}
     .icon-btn svg{width:14px; height:14px;}
   }
 /* ============================= TWINKLE STARS (mini game) ============================= */
@@ -2206,7 +2074,11 @@ renderAchieveList();
     w = canvas.width = window.innerWidth;
     h = canvas.height = window.innerHeight;
   }
-  window.addEventListener('resize', resize);
+  let resizeTimer = null;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(resize, 150); // debounce: đỡ cấp phát lại canvas liên tục khi đang kéo giãn cửa sổ
+  });
   resize();
 
   function getAccent(){
@@ -3502,18 +3374,7 @@ setInterval(() => { if (!window.__pauseBackgroundFX) updateActivityBars(); }, 30
 })();
 
 /* ---------------------------- CARD TILT ---------------------------- */
-(function cardTilt(){
-  if (window.matchMedia('(hover:none)').matches) return;
-  document.querySelectorAll('.card').forEach(card => {
-    card.addEventListener('mousemove', (e) => {
-      const r = card.getBoundingClientRect();
-      const px = (e.clientX - r.left) / r.width - 0.5;
-      const py = (e.clientY - r.top) / r.height - 0.5;
-      card.style.transform = `perspective(900px) rotateY(${px*5}deg) rotateX(${-py*5}deg)`;
-    });
-    card.addEventListener('mouseleave', () => { card.style.transform = ''; });
-  });
-})();
+
 </script>
 </body>
 </html>
